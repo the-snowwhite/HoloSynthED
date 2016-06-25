@@ -1,0 +1,448 @@
+﻿#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "tabWidget.h"
+#include <QAbstractButton>
+#include <QObject>
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_symbol.h>
+#include <qwt_legend.h>
+//#include "fpga.h"
+//#include <stdint.h>
+
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+    this->setFixedSize(1280,800);// fix windows size
+    mytabWidget = new QTabWidget(this);
+    tab1 = new fileTab();
+    mytabWidget->addTab(tab1, tr("File Actions"));
+    mytabWidget->addTab(new synth1Tab(), tr("Synth1"));
+    mytabWidget->setFixedSize(1024,768);
+    mytabWidget->setGeometry(0,25,100,100);
+    QObject::connect( tab1, SIGNAL(quit_touched()) ,this ,SLOT(close()));
+    mytabWidget->setCurrentIndex(1);
+    mytabWidget->show();
+}
+
+fileTab::fileTab()
+{
+    closebutton = new QPushButton("Quit",this);
+   QObject::connect(closebutton, SIGNAL(pressed()) , this , SLOT(on_closebutton_pressed()));
+}
+
+void fileTab::on_closebutton_pressed()
+{
+    emit quit_touched();
+}
+
+synth1Tab::synth1Tab()
+{
+//    int Address, regvalue;
+    fpga = new FPGA;
+
+    // Make main value slider
+    QPalette *p_slider = new QPalette;
+    p_slider->setColor(QPalette::Background,Qt::green);
+    main_slider = new QSlider(Qt::Vertical,this);
+    main_slider->setGeometry(QRect(QPoint(522,40),QSize(60,300)));
+    aSliderProxy = new SliderProxy;
+    main_slider->setStyle(aSliderProxy);
+    main_slider->setMaximum(127);
+    main_slider->setMinimum(0);
+    main_slider->setPageStep(1);
+    main_slider->show();
+    main_lcd = new QLCDNumber(this);
+    main_lcd->setGeometry(QRect(QPoint(528,340),QSize(lcd_width+5,lcd_height)));
+    main_lcd->setDigitCount(3);
+    main_lcd->setSegmentStyle(QLCDNumber::Filled);
+    main_lcd->show();
+    QObject::connect(main_slider,SIGNAL(valueChanged(int)),main_lcd,SLOT(display(int)));
+
+    // Make osc text labels
+    oscLabels <<"osc\nnum "<<"  ct"<<"  ft"<<" vol"<<" m_o"<<"fb_o"<<"k_sc"<<" off"<<" pan"<<"b_ct"<<"b_ft"<<"m_in"<<"fb_in";
+    for(i=0;i<13;i++)
+    {
+        osc_label[i] = new QLabel(oscLabels[i],this);
+        osc_label[i]->setGeometry(QRect(QPoint((0+(lcd_width * i)),(10)),QSize(lcd_width,lcd_height)));
+        osc_label[i]->show();
+    }
+    for(i=0;i<4;i++)
+    {
+        osc_num_label[i] = new QLabel(QString::number(i+1),this);
+        osc_num_label[i]->setGeometry(QRect(QPoint(10,(40+(lcd_height*i))),QSize(lcd_width,lcd_height)));
+        osc_num_label[i]->show();
+    }
+
+    // Make osc lcds + selectbuttons and value view regs
+    QPalette *p_osc = new QPalette;
+    p_osc->setColor(QPalette::WindowText,Qt::red);
+    for(j=0;j<4;j++)
+    {
+        for(i = 0;i<12;i++){
+            osc_lcd[i][j] = new QLCDNumber(this);
+            osc_lcd[i][j]->setGeometry(QRect(QPoint((34+(lcd_width * i)),(38 + (lcd_height * j))),QSize(lcd_width,lcd_height)));
+            osc_lcd[i][j]->setDigitCount(3);
+            osc_lcd[i][j]->setSegmentStyle(QLCDNumber::Filled);
+            osc_lcd[i][j]->setPalette(*p_osc);
+            osc_button[i][j] = new QPushButton("" ,this);
+            osc_button[i][j]->setGeometry(QRect(QPoint((34+(lcd_width * i)),(38+ (lcd_height * j))),QSize(lcd_width,lcd_height)));
+            osc_button[i][j]->setFlat(true);
+        }
+    }
+    for(j=0;j<4;j++)
+    {
+        for(i=0;i<12;i++)
+        {
+            QObject::connect(osc_button[i][j],SIGNAL(pressed()),this,SLOT(osc_button_pressed()));
+        }
+    }
+
+    // Make matrix text labels
+    matLabels <<" osc\n out "<<"osc1 \n in "<<"osc2 \n in "<<"osc3 \n in "<<"osc4 \n in ";
+//    for(z=0;z<2;z++)
+//    {
+//        x_offset = z * 200;
+        for(i=0;i<5;i++)
+        {
+            mat_label[i] = new QLabel(matLabels[i],this);
+            mat_label[i]->setGeometry(QRect(QPoint((572+(lcd_width * i)),(0)),QSize(lcd_width,(lcd_height))));
+            mat_label[i]->show();
+            for(i=0;i<4;i++)
+            {
+                mat_num_label[i] = new QLabel(QString::number(i+1)+">",this);
+                mat_num_label[i]->setGeometry(QRect(QPoint(580,(40+(lcd_height*i))),QSize(lcd_width,lcd_height)));
+                mat_num_label[i]->show();
+            }
+        }
+ //   }
+
+    // Make mod and fb matrix lcds and buttons
+    QPalette *p_mat = new QPalette;
+    p_mat->setColor(QPalette::WindowText,Qt::blue);
+    for(j=0;j<4;j++)
+    {
+        for(i = 0;i<4;i++){
+            mat_lcd[i][j] = new QLCDNumber(this);
+            mat_lcd[i][j]->setGeometry(QRect(QPoint((600+(lcd_width * i)),(38 + (lcd_height * j))),QSize(lcd_width,lcd_height)));
+            mat_lcd[i][j]->setDigitCount(3);
+            mat_lcd[i][j]->setSegmentStyle(QLCDNumber::Filled);
+            mat_lcd[i][j]->setPalette(*p_mat);
+            mat_button[i][j] = new QPushButton("" ,this);
+            mat_button[i][j]->setGeometry(QRect(QPoint((600+(lcd_width * i)),(38+ (lcd_height * j))),QSize(lcd_width,lcd_height)));
+            mat_button[i][j]->setFlat(true);
+        }
+    }
+    for(j=0;j<4;j++)
+    {
+        for(i=0;i<4;i++)
+        {
+            QObject::connect(mat_button[i][j],SIGNAL(pressed()),this,SLOT(mat_button_pressed()));
+        }
+    }
+
+    // Make Envelope text labels
+    for(j=0;j<5;j++)
+    {
+        p_env[j] = new QPalette;
+        switch (j) {
+        case 0:
+            x_offset = 0; y_offset = 0; z=0; o=0;
+            p_env[j]->setColor(QPalette::WindowText,Qt::green);
+            break;
+        case 1:
+            x_offset = 590; y_offset = 0; z=0; o=8;
+            p_env[j]->setColor(QPalette::WindowText,Qt::black);
+            break;
+        case 2:
+            x_offset = 220; y_offset = 0; z=1; o=0;
+            p_env[j]->setColor(QPalette::WindowText,Qt::blue);
+            break;
+        case 3:
+            x_offset = 0; y_offset = 200; z=2; o=0;
+            p_env[j]->setColor(QPalette::WindowText,Qt::red);
+            break;
+        case 4:
+            x_offset = 220; y_offset = 200; z=3; o=0;
+            p_env[j]->setColor(QPalette::WindowText,Qt::magenta);
+            break;
+        default:
+            break;
+        }
+        envLabels <<" Rate "<<"Level";
+        for(i=0;i<2;i++)
+        {
+            env_label[i][j] = new QLabel(envLabels[i],this);
+            env_label[i][j]->setGeometry(QRect(QPoint(x_offset + 10,(y_offset + 305+(lcd_height*i))),QSize(lcd_width,lcd_height)));
+            env_label[i][j]->show();
+        }
+        for(i=0;i<4;i++)
+        {
+            env_num_label[i][j] = new QLabel(QString::number(i+1),this);
+            env_num_label[i][j]->setGeometry(QRect(QPoint((x_offset + 70+(lcd_width * i)),(y_offset + 280)),QSize(lcd_width,(lcd_height))));
+            env_num_label[i][j]->show();
+        }
+
+        // Make Envelope lcd's and select buttons
+        for(xi=0;xi<2;xi++)
+        {
+            for(i = 0;i<4;i++){
+                env_lcd[(o+i+(xi*4))][z] = new QLCDNumber(this);
+                env_lcd[(o+i+(xi*4))][z]->setGeometry(QRect(QPoint((x_offset + 50+(lcd_width * i)),(y_offset + 305 + (lcd_height * xi))),QSize(lcd_width,lcd_height)));
+                env_lcd[(o+i+(xi*4))][z]->setDigitCount(3);
+                env_lcd[(o+i+(xi*4))][z]->setSegmentStyle(QLCDNumber::Filled);
+                env_lcd[(o+i+(xi*4))][z]->setPalette(*p_env[j]);
+                env_button[(o+i+(xi*4))][z] = new QPushButton("" ,this);
+                env_button[(o+i+(xi*4))][z]->setGeometry(QRect(QPoint((x_offset + 50+(lcd_width * i)),(y_offset + 305+ (lcd_height * xi))),QSize(lcd_width,lcd_height)));
+                env_button[(o+i+(xi*4))][z]->setFlat(true);
+                QObject::connect(env_button[(o+i+(xi*4))][z],SIGNAL(pressed()),this,SLOT(env_button_pressed()));
+            }
+        }
+    }
+
+    // Make Envelope qwt display
+    for(i=0;i<5;i++)
+    {
+        qwtPlotenv[i] = new QwtPlot(this);
+        curve[i] = new QwtPlotCurve();
+        curve[i]->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+        symbol[i] = new QwtSymbol( QwtSymbol::Ellipse,
+                                   QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
+        curve[i]->setSymbol( symbol[i] );
+        points[i] << QPointF(0, 0 ) << QPointF( 0, 0 ) << QPointF( 0, 0 )
+                  << QPointF( 0 , 127) << QPointF( 0 , 0 );
+        curve[i]->setSamples( points[i] );
+        curve[i]->attach( qwtPlotenv[i] );
+        qwtPlotenv[i]->setAxisScale(QwtPlot::yLeft,0,127,0);
+        qwtPlotenv[i]->setAxisScale(QwtPlot::xBottom ,0,508,0);
+        qwtPlotenv[i]->enableAxis(QwtPlot::xBottom,false);
+        qwtPlotenv[i]->enableAxis(QwtPlot::yLeft,false);
+        qwtPlotenv[i]->show();
+    }
+    curve[0]->setPen( Qt::green, 4 );
+    curve[1]->setPen( Qt::black, 4 );
+    curve[2]->setPen( Qt::blue, 4 );
+    curve[3]->setPen( Qt::red, 4 );
+    curve[4]->setPen( Qt::magenta, 4 );
+    qwtPlotenv[0]->setGeometry(QRect(QPoint(10,190),QSize(200,100)));
+    qwtPlotenv[1]->setGeometry(QRect(QPoint(600,190),QSize(200,100)));
+    qwtPlotenv[2]->setGeometry(QRect(QPoint(230,190),QSize(200,100)));
+    qwtPlotenv[3]->setGeometry(QRect(QPoint(10,390),QSize(200,100)));
+    qwtPlotenv[4]->setGeometry(QRect(QPoint(230,390),QSize(200,100)));
+    QObject::connect(main_slider,SIGNAL(valueChanged(int)),this,SLOT(main_slider_val_change(int)));
+
+    // read valus into Gui
+    QByteArray gui_only = qgetenv("GUI_ONLY");
+    if( gui_only.isEmpty())
+    {
+//        for(Address = 0x000;Address<0x040;Address++)
+        for(Address = 0x000;Address<0x018;Address++) { // env 1, main vol env, env  2
+            regvalue = fpga->SynthregGet(Address);                   setLCD(Address,regvalue);  }
+        for(Address = 0x020;Address<0x028;Address++) { // env 3
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(Address = 0x030;Address<0x038;Address++) { // env  4
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(Address = 0x080;Address<0x08c;Address++) { // osc 1
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(Address = 0x090;Address<0x09c;Address++) { // osc 2
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(Address = 0x0a0;Address<0x0ac;Address++) { // osc 3
+            regvalue = fpga->SynthregGet(Address);                   setLCD(Address,regvalue);  }
+        for(Address = 0x0b0;Address<0x0bc;Address++) { // osc 4
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(i=0;i<4;i++)
+        {
+            for(Address =(0x100 + i * 0x010);Address<(0x104 + i * 0x010);Address++) { //mod matrix
+                regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        }
+        for(Address = 0x100;Address<0x104;Address++) { //mod matrix
+            regvalue = fpga->SynthregGet(Address);                  setLCD(Address,regvalue);  }
+        for(i=1;i<6;i++)  setEnvPlot(i);
+    }
+}
+
+void synth1Tab::setEnvPlot(int envNr)
+{
+    int x[4];
+    switch (envNr) {
+    case 1:// env 1
+        x[0] = env_lcd[0][0]->value();
+        x[1] = env_lcd[1][0]->value();
+        x[2] = env_lcd[2][0]->value();
+        x[3] = env_lcd[3][0]->value();
+        points[0].clear();
+        points[0] << QPointF( 0, 0 ) << QPointF( x[0], env_lcd[4][0]->value() ) << QPointF( x[0] + x[1], env_lcd[5][0]->value() )
+            << QPointF( x[0] + x[1] + x[2], env_lcd[6][0]->value() ) << QPointF( x[0] + x[1] + x[2] + x[3],env_lcd[7][0]->value() );
+        curve[0]->setSamples( points[0] );
+        qwtPlotenv[0]->replot();
+        break;
+    case 2: // Main vol env
+        x[0] = env_lcd[8][0]->value();
+        x[1] = env_lcd[9][0]->value();
+        x[2] = env_lcd[10][0]->value();
+        x[3] = env_lcd[11][0]->value();
+        points[1].clear();
+        points[1] << QPointF( 0, 0 ) << QPointF( x[0], env_lcd[12][0]->value() ) << QPointF( x[0] + x[1], env_lcd[13][0]->value() )
+            << QPointF( x[0] + x[1] + x[2], env_lcd[14][0]->value() ) << QPointF( x[0] + x[1] + x[2] + x[3],env_lcd[15][0]->value() );
+        curve[1]->setSamples( points[1] );
+        qwtPlotenv[1]->replot();
+        break;
+    case 3:// env 2
+        x[0] = env_lcd[0][1]->value();
+        x[1] = env_lcd[1][1]->value();
+        x[2] = env_lcd[2][1]->value();
+        x[3] = env_lcd[3][1]->value();
+        points[2].clear();
+        points[2] << QPointF( 0, 0 ) << QPointF( x[0], env_lcd[4][1]->value() ) << QPointF( x[0] + x[1], env_lcd[5][1]->value() )
+            << QPointF( x[0] + x[1] + x[2], env_lcd[6][1]->value() ) << QPointF( x[0] + x[1] + x[2] + x[3],env_lcd[7][1]->value() );
+        curve[2]->setSamples( points[2] );
+        qwtPlotenv[2]->replot();
+        break;
+    case 4:// env 3
+        x[0] = env_lcd[0][2]->value();
+        x[1] = env_lcd[1][2]->value();
+        x[2] = env_lcd[2][2]->value();
+        x[3] = env_lcd[3][2]->value();
+        points[3].clear();
+        points[3] << QPointF( 0, 0 ) << QPointF( x[0], env_lcd[4][2]->value() ) << QPointF( x[0] + x[1], env_lcd[5][2]->value() )
+            << QPointF( x[0] + x[1] + x[2], env_lcd[6][2]->value() ) << QPointF( x[0] + x[1] + x[2] + x[3],env_lcd[7][2]->value() );
+        curve[3]->setSamples( points[3] );
+        qwtPlotenv[3]->replot();
+        break;
+    case 5:// env 4
+        x[0] = env_lcd[0][3]->value();
+        x[1] = env_lcd[1][3]->value();
+        x[2] = env_lcd[2][3]->value();
+        x[3] = env_lcd[3][3]->value();
+        points[4].clear();
+        points[4] << QPointF( 0, 0 ) << QPointF( x[0], env_lcd[4][3]->value() ) << QPointF( x[0] + x[1], env_lcd[5][3]->value() )
+            << QPointF( x[0] + x[1] + x[2], env_lcd[6][3]->value() ) << QPointF( x[0] + x[1] + x[2] + x[3],env_lcd[7][3]->value() );
+        curve[4]->setSamples( points[4] );
+        qwtPlotenv[4]->replot();
+        break;
+   default:
+        break;
+    }
+}
+
+void synth1Tab::osc_button_pressed(void)
+{
+    for(j=0;j<4;j++)
+    {
+        for(i=0;i<12;i++)
+        {
+            if(osc_button[i][j]->QAbstractButton::isDown())
+            {
+                Addressreg_x = i; Addressreg_y = j+4;
+                val = osc_lcd[i][j]->value();
+                if((i < 2) || (i >= 7 && i <= 9) ) main_slider->setValue(val+64);
+                else main_slider->setValue(val);
+            }
+        }
+    }
+}
+
+void synth1Tab::mat_button_pressed(void)
+{
+    for(j=0;j<4;j++)
+    {
+        for(i=0;i<4;i++)
+        {
+            if(mat_button[i][j]->QAbstractButton::isDown())
+            {
+                Addressreg_x = i; Addressreg_y = j+8;
+                val = mat_lcd[i][j]->value();
+                main_slider->setValue(val);
+            }
+        }
+    }
+}
+
+void synth1Tab::env_button_pressed(void)
+{
+    int reg_num;
+    for(j=0;j<4;j++)
+    {
+        if(j==0) reg_num =16;
+        else reg_num = 8;
+        for(i=0;i<reg_num;i++)
+        {
+            if(env_button[i][j]->QAbstractButton::isDown())
+            {
+                Addressreg_x = i; Addressreg_y = j;
+                val = env_lcd[i][j]->value();
+                main_slider->setValue(val);
+            }
+        }
+    }
+}
+
+void synth1Tab::main_slider_val_change(int value)
+{
+    if(Addressreg_y < 4){
+        fpga->SynthregSet(((Addressreg_y << 4)+Addressreg_x),value);
+        env_lcd[Addressreg_x][Addressreg_y]->display(value);
+        switch (Addressreg_y) {
+        case 0:
+            if(Addressreg_x<8){
+                setEnvPlot(1);
+            }else setEnvPlot(2);
+            break;
+        case 1:
+            setEnvPlot(3);
+            break;
+        case 2:
+            setEnvPlot(4);
+            break;
+        case 3:
+            setEnvPlot(5);
+            break;
+        default:
+            break;
+        }
+    }
+    else if(Addressreg_y < 8)
+    {
+        fpga->SynthregSet(((0x080+((Addressreg_y - 4)<< 4))+Addressreg_x),value);
+        if(Addressreg_x <2) osc_lcd[Addressreg_x][Addressreg_y - 4]->display(value-64);
+        else if(Addressreg_x >= 7 && Addressreg_x <= 9) osc_lcd[Addressreg_x][Addressreg_y - 4]->display(value-64);
+        else osc_lcd[Addressreg_x][Addressreg_y - 4]->display(value);
+    }
+    else if(Addressreg_y < 12)
+    {
+        fpga->SynthregSet(((0x100+((Addressreg_y - 8)<< 4))+Addressreg_x), value);
+        mat_lcd[Addressreg_x][Addressreg_y - 8]->display(value);
+    }
+}
+void synth1Tab::setLCD(unsigned int RegAddress, int newValue)
+{
+//    fpga->SynthregSet(RegAddress, newValue);
+    if(RegAddress < 0x040)
+    {
+        env_lcd[(RegAddress & 0xf)][(RegAddress>>4)]->display(newValue);
+    }
+    else if(RegAddress >= 0x080 && (RegAddress < 0x0c0))
+     {
+        if(((RegAddress & 0xf) < 2) || ((RegAddress & 0xf) >= 7 && (RegAddress & 0xf) <= 9))
+            osc_lcd[(RegAddress & 0xf)][(((RegAddress & 0x70)>>4))]->display(newValue-64);
+        else osc_lcd[(RegAddress & 0xf)][(((RegAddress & 0x70)>>4))]->display(newValue);
+     }
+    else if(RegAddress >= 0x100 && RegAddress < 0x140)
+     {
+         mat_lcd[(RegAddress & 0xf)][((RegAddress & 0x70)>>4)]->display(newValue);
+     }
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::quit(void)
+{
+    close();
+}
