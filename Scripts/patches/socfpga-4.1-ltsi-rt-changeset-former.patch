@@ -1,0 +1,142 @@
+From faffc7dfdddd0c0a50fd9a0da787de1a45305076 Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Sat, 23 Apr 2016 16:37:28 +0200
+Subject: [PATCH 1/4] add ext4 root fs support and autofs4 module
+
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 01e6811..3065670 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -11,7 +11,7 @@ CONFIG_EMBEDDED=y
+ CONFIG_PROFILING=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+-# CONFIG_LBDAF is not set
++CONFIG_LBDAF=y
+ # CONFIG_BLK_DEV_BSG is not set
+ # CONFIG_IOSCHED_DEADLINE is not set
+ # CONFIG_IOSCHED_CFQ is not set
+@@ -97,7 +97,8 @@ CONFIG_SPI_DW_MMIO=y
+ CONFIG_SPI_SPIDEV=y
+ CONFIG_GPIOLIB=y
+ CONFIG_GPIO_SYSFS=y
+-CONFIG_GPIO_ALTERA=y
++CONFIG_AUTOFS4_FS=m
++CONFIG_GPIO_ALTERA=m
+ CONFIG_GPIO_DWAPB=y
+ CONFIG_GPIO_A10SYCON=y
+ CONFIG_SENSORS_A10SYCON=y
+@@ -139,6 +140,9 @@ CONFIG_EXT2_FS_XATTR=y
+ CONFIG_EXT2_FS_POSIX_ACL=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
++CONFIG_EXT4_FS_XATTR=y
++CONFIG_EXT4_FS_POSIX_ACL=y
++CONFIG_EXT4_FS_SECURITY=y
+ # CONFIG_DNOTIFY is not set
+ CONFIG_VFAT_FS=y
+ CONFIG_NTFS_FS=y
+-- 
+2.8.1
+
+
+From 2eacc923505feb095719727b8d99d0409b472f72 Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Sat, 23 Apr 2016 16:37:59 +0200
+Subject: [PATCH 2/4] add uio driver support
+
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 3065670..b045bb9 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -162,3 +162,6 @@ CONFIG_DETECT_HUNG_TASK=y
+ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
++CONFIG_UIO=m
++CONFIG_UIO_PDRV=y
++CONFIG_UIO_PDRV_GENIRQ=y
+-- 
+2.8.1
+
+
+From dea006c4aefe32baac50fc9320dc5e1fc28743c6 Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Mon, 25 Apr 2016 15:14:08 +0200
+Subject: [PATCH 3/4] add configfs and fpgacfg dts entities, and dynamic dts
+ overlay support options
+
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index b045bb9..3db7618 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -162,6 +162,8 @@ CONFIG_DETECT_HUNG_TASK=y
+ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
+-CONFIG_UIO=m
++CONFIG_UIO=y
+ CONFIG_UIO_PDRV=y
+ CONFIG_UIO_PDRV_GENIRQ=y
++CONFIG_CONFIGFS_FS=y
++CONFIG_OF_OVERLAY=y
+\ No newline at end of file
+-- 
+2.8.1
+
+
+From a2665f3e857777df523f1787074079f5989f972d Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Mon, 13 Jun 2016 23:15:33 +0200
+Subject: [PATCH 4/4] add iscsi support
+
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 3db7618..a791fc2 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -70,8 +70,14 @@ CONFIG_ALTERA_SYSID=m
+ CONFIG_EEPROM_AT24=y
+ CONFIG_SCSI=y
+ # CONFIG_SCSI_PROC_FS is not set
++CONFIG_SCSI_NETLINK=y
+ CONFIG_BLK_DEV_SD=y
+-# CONFIG_SCSI_LOWLEVEL is not set
++CONFIG_SCSI_CONSTANTS=y
++CONFIG_SCSI_ISCSI_ATTRS=y
++CONFIG_SCSI_LOWLEVEL=y
++CONFIG_ISCSI_TCP=y
++CONFIG_ISCSI_BOOT_SYSFS=y
++CONFIG_VMWARE_PVSCSI=m
+ CONFIG_NETDEVICES=y
+ CONFIG_E1000E=m
+ CONFIG_IGB=m
+@@ -166,4 +172,4 @@ CONFIG_UIO=y
+ CONFIG_UIO_PDRV=y
+ CONFIG_UIO_PDRV_GENIRQ=y
+ CONFIG_CONFIGFS_FS=y
+-CONFIG_OF_OVERLAY=y
+\ No newline at end of file
++CONFIG_OF_OVERLAY=y
+-- 
+2.8.1
+
