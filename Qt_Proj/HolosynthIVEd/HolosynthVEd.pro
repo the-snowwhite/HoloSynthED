@@ -10,12 +10,14 @@ message("Gui only")
 }else{
 message("No GUI_ONLY found")
 message("Gui + synth io")
-include ( /usr/local/lib/qwt-6.1.0soc/features/qwt.prf )
-unix:!macx: LIBS += -L/usr/local/lib/qwt-6.1.0soc/lib/ -lqwt
-INCLUDEPATH += /home/mib/altera/15.1/embedded/ip/altera/hps/altera_hps/hwlib/include
-DEPENDPATH += /home/mib/altera/15.1/embedded/ip/altera/hps/altera_hps/hwlib/include
-INCLUDEPATH += /usr/local/lib/qwt-6.1.0soc/include
-DEPENDPATH += /usr/local/lib/qwt-6.1.0soc/include
+include ( /usr/local/qwt-6.1.3/features/qwt.prf )
+unix:!macx: LIBS += -L/usr/local/qwt-6.1.3/lib -lqwt
+INCLUDEPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
+DEPENDPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
+INCLUDEPATH += /home/mib/altera/16.0/embedded/ip/altera/hps/altera_hps/hwlib/include
+DEPENDPATH += /home/mib/altera/16.0/embedded/ip/altera/hps/altera_hps/hwlib/include
+INCLUDEPATH += /usr/local/qwt-6.1.3/include
+DEPENDPATH += /usr/local/qwt-6.1.3/include
 }
 
 QT       += core gui
@@ -47,7 +49,7 @@ FORMS    += mainwindow.ui
 QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS += -Wno-psabi
 
-target.path = /home/holosynth/prg
+target.path = /home/holosynth/HolosynthVEd
 INSTALLS += target
 
 RESOURCES += virtualboard.qrc
