@@ -1,7 +1,7 @@
-From bd205b90c4a1c904ee83f0e41007b42ba38dadb9 Mon Sep 17 00:00:00 2001
+From f4e1394fe77b968203a556ea0baa3dd052443e20 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:48:25 +0200
-Subject: [PATCH 1/8] add ext4 root fs support and autofs4 module
+Subject: [PATCH 1/9] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -46,10 +46,10 @@ index 01e6811..1fb717a 100644
 2.7.4
 
 
-From a87d8ed771ec5fe6ea0a10e6f9b632d8edff6211 Mon Sep 17 00:00:00 2001
+From ed6ad59eabb0f8565020f89bb5cf0d9bfdf47301 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:52:00 +0200
-Subject: [PATCH 2/8] add uio driver support
+Subject: [PATCH 2/9] add uio driver support
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -60,7 +60,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 3 insertions(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 1fb717a..0362e72 100644
+index 1fb717a..cef8170 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -162,3 +162,6 @@ CONFIG_DETECT_HUNG_TASK=y
@@ -68,16 +68,16 @@ index 1fb717a..0362e72 100644
  CONFIG_DEBUG_USER=y
  CONFIG_XZ_DEC=y
 +CONFIG_UIO=y
-+CONFIG_UIO_PDRV=y
-+CONFIG_UIO_PDRV_GENIRQ=y
++CONFIG_UIO_PDRV=m
++CONFIG_UIO_PDRV_GENIRQ=m
 -- 
 2.7.4
 
 
-From c9f102f2216877db9c3a62864635dddf4c58639e Mon Sep 17 00:00:00 2001
+From e6d8e9a0d1d5184ec9646215b89a4e7bce93d1e3 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:55:33 +0200
-Subject: [PATCH 3/8] add configfs and fpgacfg dts entities, and dynamic dts
+Subject: [PATCH 3/9] add configfs and fpgacfg dts entities, and dynamic dts
  overlay support options
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
@@ -89,23 +89,23 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 0362e72..bcb93cd 100644
+index cef8170..d7fc496 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -165,3 +165,5 @@ CONFIG_XZ_DEC=y
  CONFIG_UIO=y
- CONFIG_UIO_PDRV=y
- CONFIG_UIO_PDRV_GENIRQ=y
+ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
 +CONFIG_CONFIGFS_FS=y
 +CONFIG_OF_OVERLAY=y
 -- 
 2.7.4
 
 
-From c1233a7c69d293c436bfbb72ec676e9c8dba1335 Mon Sep 17 00:00:00 2001
+From fe8375e027277e63edbdda80ab045dccec2d6979 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Wed, 29 Jun 2016 19:05:21 +0200
-Subject: [PATCH 4/8] add socfpga .dtb files to kernel-image .deb
+Subject: [PATCH 4/9] add socfpga .dtb files to kernel-image .deb
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 Signed-off-by: the-snowwhite <producer@holotronic.dk>
@@ -133,10 +133,10 @@ index 88dbf23..c397685 100755
 2.7.4
 
 
-From f4c7f51297cfcb421eae9580dec600ac8546dadf Mon Sep 17 00:00:00 2001
+From e9aa0e6c39043ce47c435ca892012415880ef42f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:10:28 +0200
-Subject: [PATCH 5/8] disable CONFIG_LOCALVERSION_AUTO for consistant
+Subject: [PATCH 5/9] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -145,11 +145,11 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index bcb93cd..0a68f6d 100644
+index d7fc496..84dbda7 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -167,3 +167,4 @@ CONFIG_UIO_PDRV=y
- CONFIG_UIO_PDRV_GENIRQ=y
+@@ -167,3 +167,4 @@ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
  CONFIG_CONFIGFS_FS=y
  CONFIG_OF_OVERLAY=y
 +CONFIG_LOCALVERSION_AUTO=n
@@ -157,10 +157,10 @@ index bcb93cd..0a68f6d 100644
 2.7.4
 
 
-From 54450c383a5e62cd747c28b9e4b94250fba9ffc0 Mon Sep 17 00:00:00 2001
+From e9d6f4a588f77ad9442f3d3b79fb5669fad76116 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:13:51 +0200
-Subject: [PATCH 6/8] enable jumboframes maxmtu=9000
+Subject: [PATCH 6/9] enable jumboframes maxmtu=9000
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -184,10 +184,10 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From 42e6307d915dda7bc379c1eb12901ca0661836a9 Mon Sep 17 00:00:00 2001
+From e1efc2b711cf1bd9b12f53d23d8d4d80ed44f302 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:11 +0200
-Subject: [PATCH 7/8] enable initramfs
+Subject: [PATCH 7/9] enable initramfs
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -195,10 +195,10 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 10 insertions(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 0a68f6d..6f798e4 100644
+index 84dbda7..2e7f062 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -168,3 +168,13 @@ CONFIG_UIO_PDRV_GENIRQ=y
+@@ -168,3 +168,13 @@ CONFIG_UIO_PDRV_GENIRQ=m
  CONFIG_CONFIGFS_FS=y
  CONFIG_OF_OVERLAY=y
  CONFIG_LOCALVERSION_AUTO=n
@@ -216,10 +216,10 @@ index 0a68f6d..6f798e4 100644
 2.7.4
 
 
-From be96394590c6c27d2368bd029517b8d255e26fb1 Mon Sep 17 00:00:00 2001
+From f672c6e7706984b1f0ff9f54f08d9490d1282d9c Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:41 +0200
-Subject: [PATCH 8/8] disable debug package gen
+Subject: [PATCH 8/9] disable debug package gen
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -227,7 +227,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 6f798e4..aea26cb 100644
+index 2e7f062..82264b9 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -155,7 +155,7 @@ CONFIG_ROOT_NFS=y
@@ -239,6 +239,70 @@ index 6f798e4..aea26cb 100644
  CONFIG_MAGIC_SYSRQ=y
  CONFIG_DETECT_HUNG_TASK=y
  # CONFIG_SCHED_DEBUG is not set
+-- 
+2.7.4
+
+
+From 40cc69f2594d7a777fe972c89f05b5ab05282671 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 19:32:34 +0200
+Subject: [PATCH 9/9] enable framebuffer and add dts entity to kernel dtb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga.dtsi     | 13 ++++++++++++-
+ arch/arm/configs/socfpga_defconfig | 17 +++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
+index 24b0289..4cfa653 100644
+--- a/arch/arm/boot/dts/socfpga.dtsi
++++ b/arch/arm/boot/dts/socfpga.dtsi
+@@ -101,7 +101,18 @@
+ 			#size-cells = <0x1>;
+ 			ranges = <0 0xff200000 0x100000>;
+ 		};
+-
++		
++		alt_vip_vfr_vga: vip@0x0xff200100 {
++			compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
++			reg = <0xff200100 0x00000080>;
++			max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
++			max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
++			bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
++			colors-per-beat = <4>;	/* NUMBER_OF_CHANNELS_IN_PARALLEL type NUMBER */
++			beats-per-pixel = <1>;	/* NUMBER_OF_CHANNELS_IN_SEQUENCE type NUMBER */
++			mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
++		}; //end vip@0x100000100 (alt_vip_vfr_vga)
++		
+ 		can0: can@ffc00000 {
+ 			compatible = "bosch,d_can";
+ 			reg = <0xffc00000 0x1000>;
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 82264b9..80aa9ab 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -178,3 +178,20 @@ CONFIG_RD_LZMA=y
+ CONFIG_RD_XZ=y
+ CONFIG_RD_LZO=y
+ CONFIG_RD_LZ4=y
++CONFIG_VT_HW_CONSOLE_BINDING=y
++CONFIG_FB=y
++CONFIG_FB_CFB_FILLRECT=y
++CONFIG_FB_CFB_COPYAREA=y
++CONFIG_FB_CFB_IMAGEBLIT=y
++CONFIG_FB_ALTERA_VIP=y
++CONFIG_VGACON_SOFT_SCROLLBACK=y
++CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
++CONFIG_LOGO=y
++CONFIG_LOGO_LINUX_MONO=y
++CONFIG_LOGO_LINUX_VGA16=y
++CONFIG_LOGO_LINUX_CLUT224=y
++CONFIG_FONT_SUPPORT=y
++CONFIG_FONT_8x8=y
++CONFIG_FONT_8x16=y
 -- 
 2.7.4
 

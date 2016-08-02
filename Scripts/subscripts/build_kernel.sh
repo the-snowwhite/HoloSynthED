@@ -200,7 +200,7 @@ ARCH=arm
 
 OUT_DIR =\$(KERNEL_SRC_DIR)
 
-//NCORES=`nproc`
+#NCORES=`nproc`
 NCORES=1
 
 

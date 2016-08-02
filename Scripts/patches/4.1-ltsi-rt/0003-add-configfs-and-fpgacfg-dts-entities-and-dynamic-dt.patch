@@ -1,7 +1,7 @@
-From c9f102f2216877db9c3a62864635dddf4c58639e Mon Sep 17 00:00:00 2001
+From e6d8e9a0d1d5184ec9646215b89a4e7bce93d1e3 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:55:33 +0200
-Subject: [PATCH 3/8] add configfs and fpgacfg dts entities, and dynamic dts
+Subject: [PATCH 3/9] add configfs and fpgacfg dts entities, and dynamic dts
  overlay support options
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
@@ -13,13 +13,13 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 0362e72..bcb93cd 100644
+index cef8170..d7fc496 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -165,3 +165,5 @@ CONFIG_XZ_DEC=y
  CONFIG_UIO=y
- CONFIG_UIO_PDRV=y
- CONFIG_UIO_PDRV_GENIRQ=y
+ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
 +CONFIG_CONFIGFS_FS=y
 +CONFIG_OF_OVERLAY=y
 -- 

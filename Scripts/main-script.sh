@@ -29,20 +29,22 @@ USER_NAME=holosynth;
 # 
 #BUILD_UBOOT="yes";
 # # 
-#BUILD_KERNEL="yes";
+BUILD_KERNEL="yes";
 # # 
 #GREATE_ROOTFS_IMAGE="yes";
 # #
 #GEN_ROOTFS="yes";
 #
 #ADD_SD_USER="yes"; 
+# 
+#INST_QT="yes";INST_QT_DEPS="yes"; 
 # #  INST_LOCALKERNEL_DEBS="yes";#MAKE_UINITRD="yes";
 #
 #INST_REPOKERNEL_DEBS="yes";MAKE_UINITRD="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-CREATE_BMAP="yes"; INST_UBOOT="yes";
+#CREATE_BMAP="yes"; INST_UBOOT="yes";
 # 
 
 
@@ -206,7 +208,8 @@ install_deps() {
 	echo "MSG: deps installed"
 }
 
-#-----------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------			sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y build-dep qt5-default
+
 # external scripted functions
 #-----------------------------------------------------------------------------------
 
@@ -224,7 +227,42 @@ create_image() {
 }
 
 generate_rootfs_into_image() {
-	sh -c "${SUB_SCRIPT_DIR}/gen_rootfs-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT}" | tee ${CURRENT_DIR}/gen_rootfs-qemu_2.5-log.txt
+	sh -c "${SUB_SCRIPT_DIR}/gen_rootfs-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT} ${USER_NAME}" | tee ${CURRENT_DIR}/gen_rootfs-qemu_2.5-log.txt
+}
+
+inst_qt_build_deps(){
+echo ""
+echo "Script_MSG: Installing Qt Build Deps"
+echo ""
+
+# #sudo cp -f ${CURRENT_DIR}/sources.list ${ROOTFS_MNT}/etc/apt/sources.list-local
+sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-local ${ROOTFS_MNT}/etc/apt/sources.list
+
+sudo rm -f ${ROOTFS_MNT}/etc/resolv.conf
+sudo cp -f /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
+
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} update
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y build-dep qt5-default
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libxcb-xinerama0-dev libc6-dev
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install "^libxcb.*" libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libasound2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libxcb1 libxcb1-dev libx11-xcb1 libx11-xcb-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-image0 libxcb-image0-dev libxcb-shm0 libxcb-shm0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-sync1 libxcb-sync0-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-xfixes0-dev libxrender-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-glx0-dev
+
+echo ""
+echo "Script_MSG: Installing Qt into rootfs.img "
+echo ""
+cd ${CURRENT_DIR}
+
+sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/rm -f /etc/resolv.conf
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+}
+
+qt_build(){
+echo ""
+echo "Script_MSG: Running qt_build.sh script"
+echo ""
+sh -c "${SUB_SCRIPT_DIR}/build_qt.sh ${CURRENT_DIR}" | tee ${CURRENT_DIR}/build_qt-log.txt 
 }
 
 #-----------------------------------------------------------------------------------
@@ -292,9 +330,6 @@ unmount_rootfs_imagefile(){
 
 bind_rootfs(){
 	sudo sync
-#	sudo mount -o bind /dev ${ROOTFS_MNT}/dev
-#	sudo mount -o bind /proc ${ROOTFS_MNT}/proc
-#	sudo mount -o bind /sys ${ROOTFS_MNT}/sys
 	sudo mount --bind /dev ${ROOTFS_MNT}/dev
 	sudo mount --bind /proc ${ROOTFS_MNT}/proc
 	sudo mount --bind /sys ${ROOTFS_MNT}/sys
@@ -367,34 +402,6 @@ if [ ! -z "${COMP_PREFIX}" ]; then
 fi
 }
 
-gen_local_sources_list() {
-sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list ${CURRENT_DIR}
-
-distro="jessie"
-sudo sh -c 'cat <<EOT > '$ROOTFS_MNT'/etc/apt/sources.list
-#------------------------------------------------------------------------------#
-#                   OFFICIAL DEBIAN REPOS                    
-#------------------------------------------------------------------------------#
-
-###### Debian Main Repos
-#deb http://ftp.se.debian.org/debian/ '$distro' main contrib non-free 
-#deb-src http://ftp.se.debian.org/debian/ '$distro' main 
-
-
-##### Local Debian mirror 
-deb http://kubuntu16-srv.holotronic.lan/debian/ '$distro' main contrib non-free 
-deb-src http://kubuntu16-srv.holotronic.lan/debian/ '$distro' main 
-
-###### Debian Update Repos
-deb http://security.debian.org/ '$distro'/updates main contrib non-free 
-
-EOT'
-echo ""
-echo "Script_MSG: Created new sources.list to local apt mirror"
-echo ""
-
-}
-
 add_mk_repo(){
 echo "ECHO: adding mk sources.list"
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv 43DDF224
@@ -448,6 +455,20 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 EOT
 
+cat <<EOT >> /root/.bashrc
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+EOT
+
+cat <<EOT >> /root/.profile
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+EOT
+
 
 exit
 EOF'
@@ -456,7 +477,9 @@ sudo chmod +x ${ROOTFS_MNT}/home/add_user.sh
 
 sudo chroot ${ROOTFS_MNT} /bin/su -l root /usr/sbin/locale-gen en_GB.UTF-8 en_US.UTF-8
 
-# fix user ping:
+echo ""
+echo "Scr_MSG: fix no sudo user ping:"
+echo ""
 sudo chmod u+s ${ROOTFS_MNT}/bin/ping ${ROOTFS_MNT}/bin/ping6
 
 }
@@ -520,21 +543,20 @@ echo "----  running initial_rootfs_user_setup_sh      ------------"
 echo "------------------------------------------------------------"
 set -e
 
-gen_local_sources_list
-
 sudo rm -f ${ROOTFS_MNT}/etc/resolv.conf
 sudo cp /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
+
+echo "Script_MSG: will add user"
+gen_add_user_sh
+echo "Script_MSG: gen_add_user_sh finished ... will now run in chroot"
+
+sudo chroot ${ROOTFS_MNT} /bin/bash -c /home/add_user.sh
 
 echo "Script_MSG: installing apt-transport-https"
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes upgrade
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install apt-transport-https
 
-echo "Script_MSG: will add user"
-gen_add_user_sh
-echo "Script_MSG: gen_add_user_shfinhed ... will now run in chroot"
-
-sudo chroot ${ROOTFS_MNT} /bin/bash -c /home/add_user.sh
 if [[ "${USER_NAME}" == "machinekit" ]]; then 
 	add_mk_repo
 fi
@@ -547,134 +569,11 @@ sudo chroot ${ROOTFS_MNT} /bin/bash -c /home/initial.sh
 sudo sync
 
 cd ${CURRENT_DIR}
-sudo cp -f ${CURRENT_DIR}/sources.list ${ROOTFS_MNT}/etc/apt/sources.list
+sudo cp -f ${CURRENT_DIR}/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
 
 echo "Script_MSG: initial_rootfs_user_setup_sh finished .. ok .."
 
 }
-
-#------------------------------ qt -----------------------------------------------------------------#
-
-gen_mkspec(){
-
-	mkdir -p ${QTDIR}/qtbase/mkspecs/linux-arm-gnueabihf-g++
-	cp -f -R ${QTDIR}/qtbase/mkspecs/linux-arm-gnueabi-g++/* ${QTDIR}/qtbase/mkspecs/linux-arm-gnueabihf-g++/
-
-# qmake.conf contents:
-cat <<EOF > "${QTDIR}/qtbase/mkspecs/linux-arm-gnueabihf-g++/qmake.conf"
-#
-# qmake configuration for linux-arm-gnueabihf-g++
-#
-
-MAKEFILE_GENERATOR      = UNIX
-CONFIG                 += incremental gdb_dwarf_index
-QMAKE_INCREMENTAL_STYLE = sublib
-
-include(../common/linux.conf)
-include(../common/gcc-base-unix.conf)
-include(../common/g++-unix.conf)
-
-QMAKE_CC=${CC_DIR}/bin/arm-linux-gnueabihf-gcc
-QMAKE_CXX=${CC_DIR}/bin/arm-linux-gnueabihf-g++ -fPIC
-QMAKE_LINK=${CC_DIR}/bin/arm-linux-gnueabihf-g++
-QMAKE_LINK_SHLIB=${CC_DIR}/bin/arm-linux-gnueabihf-g++
-QMAKE_AR=${CC_DIR}/bin/arm-linux-gnueabihf-ar cr
-QMAKE_OBJCOPY=${CC_DIR}/bin/arm-linux-gnueabihf-objcopy
-QMAKE_STRIP=${CC_DIR}/bin/arm-linux-gnueabihf-strip
-QMAKE_LFLAGS_RELEASE=-"Wl,-O1,-rpath,${ROOTFS_MNT}/usr/lib,-rpath,${ROOTFS_MNT}/usr/lib/arm-linux-gnueabihf,-rpath,${ROOTFS_MNT}/lib/arm-linux-gnueabihf"
-QMAKE_LFLAGS_DEBUG += "-Wl,-rpath,${ROOTFS_MNT}/usr/lib,-rpath,${ROOTFS_MNT}/usr/lib/arm-linux-gnueabihf,-rpath,${ROOTFS_MNT}/lib/arm-linux-gnueabihf"
-
-QMAKE_INCDIR=${ROOTFS_MNT}/usr/include
-QMAKE_LIBDIR=${ROOTFS_MNT}/usr/lib
-QMAKE_LIBDIR+=${ROOTFS_MNT}/usr/lib/arm-linux-gnueabihf
-QMAKE_LIBDIR+=${ROOTFS_MNT}/lib/arm-linux-gnueabihf
-QMAKE_INCDIR_X11=${ROOTFS_MNT}/usr/include
-QMAKE_LIBDIR_X11=${ROOTFS_MNT}/usr/lib
-QMAKE_INCDIR_OPENGL=${ROOTFS_MNT}/usr/include
-QMAKE_LIBDIR_OPENGL=${ROOTFS_MNT}/usr/lib
-
-load(qt_config)
-EOF
-}
-
-
-qt_configure(){
-# -make examples-no-gtkstyle -make tools -reduce-exports  -no-dbus  
-#  -directfb 
-	../configure -release -opensource -confirm-license -no-c++11 -no-xcb -no-pch -optimized-qmake -make libs -shared -sysroot ${ROOTFS_MNT} -xplatform linux-arm-gnueabihf-g++ -qreal float -gui -linuxfb -widgets -device-option CROSS_COMPILE=/home/mib/Development/hm3-beta2/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/bin/arm-linux-gnueabihf- -qt-zlib -prefix /usr/local/lib/qt-5.4.1-altera-soc
-}
-
-
-qt_install_qwt(){
-sudo cp -R /usr/local/qwt-6.1.3 ${ROOTFS_MNT}/usr/local/lib
-sudo sh -c 'echo "/usr/local/lib/qwt-6.1.3/lib" > '${ROOTFS_MNT}'/etc/ld.so.conf.d/qt.conf'
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /sbin/ldconfig
-}
-
-
-qt_build(){
-echo ""
-echo "Script_MSG: Running qt_build"
-echo ""
-
-export PKG_CONFIG_SYSROOT_DIR=${ROOTFS_MNT}
-export CROSS_COMPILE=${CC}
-
-
-PREP_QT="yes";
-# CONFIGURE_QT="yes";
-# 
-# BUILD_QT="yes";
-# 
-# INSTALL_QT="yes";
-
-mkdir -p ${CURRENT_DIR}/Qt_logs
-
-if [[ ${PREP_QT} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
-	echo ""
-	echo "Script_MSG: Formatting old image root partition"
-	echo ""
-	format_rootfs | tee ${CURRENT_DIR}/Qt_logs/format_rootfs-log.txt
-fi
-
-mount_rootfs_imagefile
-
-if [[ ${PREP_QT} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
-#	COMP_PREFIX=final-with-kernel
-	extract_rootfs | tee ${CURRENT_DIR}/Qt_logs/extract_rootfs-log.txt
-
-#	gen_mkspec | tee ${CURRENT_DIR}/Qt_logs/gen_mkspec-log.txt 
-# 	sudo ~/sysroot-relativelinks.py ${ROOTFS_MNT}
-fi
-
-cd ${QTDIR}/build
-
-if [[ ${CONFIGURE_QT} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
-	mkdir -p ${QTDIR}/build
-	rm -r -f ${QTDIR}/build/*
-	configure_1 | tee ${CURRENT_DIR}/Qt_logs/configure_1-log.txt
-fi
-
-if [[ ${BUILD_QT} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
-	make -j${NCORES} | tee ${CURRENT_DIR}/Qt_logs/make-log.txt
-fi
-
-if [[ ${INSTALL_QT} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
-	sudo make install | tee ${CURRENT_DIR}/Qt_logs/install-log.txt
-	sudo cp -R '/usr/local/lib/qt-5.4.1-altera-soc' ''${ROOTFS_MNT}'/usr/local/lib' 
-	cd ${CURRENT_DIR}
-	COMP_PREFIX=qt-final
-	compress_rootfs | tee ${CURRENT_DIR}/Qt_logs/compress_rootfs-log.txt
-fi
-
-##### #  #sudo gedit '/media/ac4e5a85-5e37-401f-8474-20d4316e4dee/etc/profile' 
-
-qt_install_qwt
-
-unmount_rootfs_imagefile
-}
-
-#------------------------------ end qt -------------------------------------------------------------#
 
 add_kernel2repo(){
 
@@ -750,7 +649,7 @@ sudo chmod 755 "${ROOTFS_MNT}/etc/kernel/postinst.d/zzz-socfpga-mkimage"
 
 inst_kernel_from_deb_repo(){
 
-gen_local_sources_list
+sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-local ${ROOTFS_MNT}/etc/apt/sources.list
 
 sudo rm -f ${ROOTFS_MNT}/etc/resolv.conf
 sudo cp -f /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
@@ -782,7 +681,7 @@ set -e
 #  ##sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install hm2reg-uio-dkms
 
 cd ${CURRENT_DIR}
-sudo cp -f ${CURRENT_DIR}/sources.list ${ROOTFS_MNT}/etc/apt/sources.list
+sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/rm -f /etc/resolv.conf
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
@@ -790,22 +689,6 @@ PREFIX=${ROOTFS_MNT}
 kill_ch_proc
 
 }
-# 
-# make_uInitrd(){
-# 
-# kver_prepend="${ROOTFS_MNT}/boot/initrd.img-"
-# size=${#kver_prepend} 
-# u_name=`ls ${kver_prepend}${KERNEL_VERSION:0:3}.*`
-# kver=${u_name:${size}}
-# echo ""
-# echo "kver = ${kver}"
-# echo ""
-# set -x
-# sudo mkimage -A arm -O linux -T ramdisk -a 0x0 -e 0x0 -n ${ROOTFS_MNT}/boot/initrd.img-${kver} -d ${ROOTFS_MNT}/boot/initrd.img-${kver} ${ROOTFS_MNT}/boot/uInitrd-${kver}
-# 
-# set +x
-# 
-# }
 
 gen_hostname() {
 
@@ -837,12 +720,10 @@ echo ""
 echo "# -----------------    Changing hostname to ${hostname}    -------------"
 echo ""
 gen_hostname
-if [[ "${USER_NAME}" == "machinekit" ]]; then 
+if [ "${USER_NAME}" == "machinekit" ]; then 
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="hm2reg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uiohm2.conf'
-else
-	if [[ "${USER_NAME}" == "holosynth" ]]; then 
-		sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
-	fi
+elif [ "${USER_NAME}" == "holosynth" ]; then 
+	sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
 fi
 echo ""
 echo "# --------->       Removing qemu policy file          <--------------- ---------"
@@ -979,7 +860,34 @@ set -e
 		
 		compress_prefix_rootfs
 	fi
-			
+	
+	if [[ ${INST_QT} == 'yes' ]]; then
+		if [[ "${USER_NAME}" == "holosynth" ]]; then 
+			if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
+				COMP_PREFIX=final_${USER_NAME}
+				inst_comp_prefis_rootfs
+				VIRGIN_IMAGE=""
+			fi
+			if [[ ${INST_QT_DEPS} == 'yes' ]]; then
+				mount_rootfs_imagefile
+				bind_rootfs
+				inst_qt_build_deps | tee ${CURRENT_DIR}/inst_qt_build_deps-log.txt
+				bind_unmount_rootfs_imagefile
+			fi	
+ 			qt_build | tee ${CURRENT_DIR}/qt_build-log.txt
+ 			
+			cp ${CURRENT_DIR}/rootfs.img ${CURRENT_DIR}/rootfs-qt-4.1.img
+			COMP_PREFIX=final_${USER_NAME}_qt
+			compress_prefix_rootfs
+		fi
+	fi
+	
+	if [ "${USER_NAME}" == "machinekit" ]; then
+		COMP_PREFIX=final_${USER_NAME}
+	elif  [ "${USER_NAME}" == "holosynth" ]; then
+		COMP_PREFIX=final_${USER_NAME}_qt
+	fi
+	
 	if [[ ${INST_LOCALKERNEL_DEBS} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
 			inst_comp_prefis_rootfs
@@ -992,7 +900,7 @@ set -e
 		fi
 		inst_kernel_from_local_deb | tee ${CURRENT_DIR}/local_kernel_install-log.txt
 		bind_unmount_rootfs_imagefile
-		COMP_PREFIX=final_${USER_NAME}-with-kernel
+		COMP_PREFIX=${COMP_PREFIX}-with-kernel
 
 		compress_prefix_rootfs
 	else
@@ -1008,43 +916,39 @@ set -e
 			fi
 			inst_kernel_from_deb_repo | tee ${CURRENT_DIR}/deb_kernel_install-log.txt
 			bind_unmount_rootfs_imagefile
-			COMP_PREFIX=final_${USER_NAME}-with-kernel
+			COMP_PREFIX=${COMP_PREFIX}-with-kernel
 
 			compress_prefix_rootfs
 		fi
 	fi
 
-	if [[ ${CREATE_BMAP} == 'yes' ]]; then ## replace old image with a fresh:
-		if [[ ${INST_UBOOT} == 'yes' ]]; then
-			IMG_PARTS=2
-			create_image
-			COMP_PREFIX=final_${USER_NAME}-with-kernel
-			if [[ "${USER_NAME}" == "machinekit" ]]; then 
-				hostname="mksocfpga3"
-			else
-				if [[ "${USER_NAME}" == "holosynth" ]]; then
-					qt_build
-					COMP_PREFIX=qt-final_${USER_NAME}-with-kernel; hostname="holosynthv"
-		
-					compress_prefix_rootfs
-				fi	
-			fi
+	if [ "${USER_NAME}" == "machinekit" ]; then
+		COMP_PREFIX=final_${USER_NAME}-with-kernel
+	elif  [ "${USER_NAME}" == "holosynth" ]; then
+		COMP_PREFIX=final_${USER_NAME}_qt-with-kernel
+	fi
 
-			mount_sdimagefile
-			extract_rootfs
+	if [[ ${CREATE_BMAP} == 'yes' ]]; then ## replace old image with a fresh:
+		IMG_PARTS=2
+		create_image
+		if [[ "${USER_NAME}" == "machinekit" ]]; then 
+			hostname="mksocfpga3"
+		elif [[ "${USER_NAME}" == "holosynth" ]]; then
+			hostname="holosynthv"
+		fi
+
+		mount_sdimagefile
+		extract_rootfs
 			
-			finalize
-			unmount_sdimagefile
+		finalize
+		unmount_sdimagefile
+		if [[ ${INST_UBOOT} == 'yes' ]]; then
 			echo "NOTE:  Will now install u-boot --> onto sd-card-image:"
 			echo "--> ${SD_IMG_FILE}"
 			echo ""
 			install_uboot | tee ${CURRENT_DIR}/u-boot_install-log.txt   # --> onto sd-card-image (.img)
-			make_bmap_image
 		fi
-# 		mount_imagefile_and_rootfs
-# 		finalize
-# 		unmount_imagefile_and_rootfs
-# 		make_bmap_image
+		make_bmap_image | tee ${CURRENT_DIR}/make_bmap_image-log.txt
 	fi
 
 	echo "#---------------------------------------------------------------------------------- "

@@ -1,0 +1,63 @@
+From 40cc69f2594d7a777fe972c89f05b5ab05282671 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 19:32:34 +0200
+Subject: [PATCH 9/9] enable framebuffer and add dts entity to kernel dtb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga.dtsi     | 13 ++++++++++++-
+ arch/arm/configs/socfpga_defconfig | 17 +++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
+index 24b0289..4cfa653 100644
+--- a/arch/arm/boot/dts/socfpga.dtsi
++++ b/arch/arm/boot/dts/socfpga.dtsi
+@@ -101,7 +101,18 @@
+ 			#size-cells = <0x1>;
+ 			ranges = <0 0xff200000 0x100000>;
+ 		};
+-
++		
++		alt_vip_vfr_vga: vip@0x0xff200100 {
++			compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
++			reg = <0xff200100 0x00000080>;
++			max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
++			max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
++			bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
++			colors-per-beat = <4>;	/* NUMBER_OF_CHANNELS_IN_PARALLEL type NUMBER */
++			beats-per-pixel = <1>;	/* NUMBER_OF_CHANNELS_IN_SEQUENCE type NUMBER */
++			mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
++		}; //end vip@0x100000100 (alt_vip_vfr_vga)
++		
+ 		can0: can@ffc00000 {
+ 			compatible = "bosch,d_can";
+ 			reg = <0xffc00000 0x1000>;
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 82264b9..80aa9ab 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -178,3 +178,20 @@ CONFIG_RD_LZMA=y
+ CONFIG_RD_XZ=y
+ CONFIG_RD_LZO=y
+ CONFIG_RD_LZ4=y
++CONFIG_VT_HW_CONSOLE_BINDING=y
++CONFIG_FB=y
++CONFIG_FB_CFB_FILLRECT=y
++CONFIG_FB_CFB_COPYAREA=y
++CONFIG_FB_CFB_IMAGEBLIT=y
++CONFIG_FB_ALTERA_VIP=y
++CONFIG_VGACON_SOFT_SCROLLBACK=y
++CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
++CONFIG_LOGO=y
++CONFIG_LOGO_LINUX_MONO=y
++CONFIG_LOGO_LINUX_VGA16=y
++CONFIG_LOGO_LINUX_CLUT224=y
++CONFIG_FONT_SUPPORT=y
++CONFIG_FONT_8x8=y
++CONFIG_FONT_8x16=y
+-- 
+2.7.4
+

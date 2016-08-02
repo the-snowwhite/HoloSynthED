@@ -9,23 +9,31 @@ CURRENT_DIR=${1}
 IMG_FILE=${2}
 distro=${3}
 ROOTFS_MNT=${4}
+USER_NAME=${5}
 
-DEFGROUPS="sudo,kmem,adm,dialout,machinekit,video,plugdev"
+if [ "${USER_NAME}" == "machinekit" ]; then
+	HOST_NAME="mksocfpga3"
+elif [ "${USER_NAME}" == "machinekit" ]; then
+	HOST_NAME="holosynthv"
+fi
+
+final_repo="http://ftp.dk.debian.org/debian/"
+local_repo="http://kubuntu16-srv.holotronic.lan/debian/"
+
+DEFGROUPS="sudo,kmem,adm,dialout,holosynth,video,plugdev"
 
 ##,rpcbind
 ##,ntpdate,avahi-discover
 ## ntpdate,dhcpcd5,isc-dhcp-client,
 # ,dhcpcd5
-#
-function run_qemu-debootstrap {
-sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,xserver-xorg-video-dummy,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools,open-iscsi ${distro} ${ROOTFS_DIR} http://kubuntu16-srv.holotronic.lan/debian/
+#xserver-xorg-video-dummy,upower
+function run_qt_qemu_debootstrap {
+sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,lxde,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools,open-iscsi ${distro} ${ROOTFS_DIR} http://kubuntu16-srv.holotronic.lan/debian/
 }
 #
-# #
-# function run_qemu-debootstrap {
-# sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,xserver-xorg-video-dummy,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,debianutils,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools ${distro} ${ROOTFS_DIR} http://ftp.debian.org/debian
-# }
-# #
+function run_qemu_debootstrap {
+sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,xserver-xorg-video-dummy,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools,open-iscsi ${distro} ${ROOTFS_DIR} http://kubuntu16-srv.holotronic.lan/debian/
+}
 #
 gen_policy_rc_d() {
 sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/usr/sbin/policy-rc.d
@@ -58,7 +66,7 @@ Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/
 
 # User privilege specification
 root    ALL=(ALL:ALL) ALL
-machinekit    ALL=(ALL:ALL) ALL
+'${USER_NAME}'    ALL=(ALL:ALL) ALL
 
 # Allow members of group sudo to execute any command
 %sudo   ALL=(ALL:ALL) ALL
@@ -67,21 +75,21 @@ machinekit    ALL=(ALL:ALL) ALL
 
 #includedir /etc/sudoers.d
 
-machinekit ALL=(ALL:ALL) NOPASSWD: ALL
-%machinekit ALL=(ALL:ALL) NOPASSWD: ALL
+'${USER_NAME}' ALL=(ALL:ALL) NOPASSWD: ALL
+%'${USER_NAME}' ALL=(ALL:ALL) NOPASSWD: ALL
 EOT'
 
 }
 
-gen_sources_list() {
-sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/apt/sources.list
+gen_final_sources_list() {
+sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/apt/sources.list-final
 #------------------------------------------------------------------------------#
 #                   OFFICIAL DEBIAN REPOS                    
 #------------------------------------------------------------------------------#
 
 ###### Debian Main Repos
-deb http://ftp.dk.debian.org/debian/ '$distro' main contrib non-free 
-deb-src http://ftp.dk.debian.org/debian/ '$distro' main 
+deb '${final_repo}' '$distro' main contrib non-free 
+deb-src '${final_repo}' '$distro' main 
 
 ###### Debian Update Repos
 deb http://security.debian.org/ '$distro'/updates main contrib non-free 
@@ -90,6 +98,27 @@ EOT'
 
 }
 
+gen_local_sources_list() {
+
+sudo sh -c 'cat <<EOT > '$ROOTFS_MNT'/etc/apt/sources.list-local
+#------------------------------------------------------------------------------#
+#                   OFFICIAL DEBIAN REPOS                    
+#------------------------------------------------------------------------------#
+
+
+##### Local Debian mirror 
+deb '${local_repo}' '$distro' main contrib non-free 
+deb-src '${local_repo}' '$distro' main 
+
+###### Debian Update Repos
+deb http://security.debian.org/ '$distro'/updates main contrib non-free 
+
+EOT'
+echo ""
+echo "Script_MSG: Created new sources.list to local apt mirror"
+echo ""
+
+}
 
 gen_fstab(){
 sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/fstab
@@ -105,37 +134,28 @@ EOT'
 }
 
 gen_hosts() {
-#echo -e "127.0.1.1\tmksocfpga" | sudo tee -a $ROOTFS_DIR/etc/hosts
+
+sudo sh -c 'echo '${HOST_NAME}' > '$ROOTFS_DIR'/etc/hostname'
 
 sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/hosts
-127.0.0.1       localhost.localdomain       localhost   mksocfpga
-127.0.1.1       mksocfpga.local             mksocfpga
+127.0.0.1       localhost.localdomain       localhost   '${HOST_NAME}'
+127.0.1.1       '${HOST_NAME}'.local             '${HOST_NAME}'
 EOT'
 
 }
 
-gen_wired_network() {
-# sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/systemd/network/20-dhcp.network
-# [Match]
-# Name=eth0
-#
-# [Network]
-# DHCP=ipv4
-# #IPv6PrivacyExtensions=true
-# #IPv6AcceptRouterAdvertisements=False
-# IPv6AcceptRouterAdvertisements=kernel
-#
-# [DHCP]
-# UseDomains=true
-#
-# EOT'
+gen_network_interface_setup() {
 
-sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/systemd/network/10-wired.network
+sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/systemd/network/20-dhcp.network
 [Match]
 Name=eth0
 
 [Network]
 DHCP=v4
+
+[DHCP]
+UseDomains=true
+
 EOT'
 }
 
@@ -634,18 +654,17 @@ gen_policy_rc_d
 
 gen_sudoers
 
-gen_sources_list
+gen_final_sources_list
+gen_local_sources_list
+sudo cp ${ROOTFS_MNT}/etc/apt/sources.list-local ${ROOTFS_MNT}/etc/apt/sources.list
 
 gen_fstab
 
-sudo sh -c 'echo mksocfpga > '$ROOTFS_DIR'/etc/hostname'
-
 gen_hosts
-
 
 sudo mkdir -p $ROOTFS_DIR/etc/systemd/network
 
-gen_wired_network
+gen_network_interface_setup
 
 sudo sh -c 'echo T0:2345:respawn:rootfs/sbin/getty -L ttyS0 115200 vt100 >> '$ROOTFS_DIR'/etc/inittab'
 
@@ -656,6 +675,8 @@ LANG=en_US.UTF-8 UTF-8
 LC_COLLATE=C
 LC_TIME=en_GB.UTF-8
 EOT'
+
+if [ "${USER_NAME}" == "machinekit" ]; then
 
 sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/X11/xorg.conf
 
@@ -672,8 +693,10 @@ Section "Device"
     Option "NoDDC" "true"
 EndSection
 EOT'
-
-echo "Config files genetated"
+fi
+echo ""
+echo "Script_MSG:  All Config files genetated"
+echo ""
 
 }
 
@@ -682,7 +705,11 @@ run_func() {
 	echo ""
 	echo "Script_MSG: running qemu-debootstrap for ${distro} os"
 	echo ""
-	run_qemu-debootstrap
+	if [ "${USER_NAME}" == "machinekit" ]; then
+		run_qemu_debootstrap
+	elif [ "${USER_NAME}" == "holosynth" ]; then
+		run_qt_qemu_debootstrap
+	fi
 
 	echo "Script_MSG: will now setup_configfiles"
 	setup_configfiles
@@ -690,7 +717,6 @@ run_func() {
 
 gen_install_in-img() {
 	if [ ! -z "${ROOTFS_MNT}" ]; then
-#		sudo mkdir -p ${ROOTFS_MNT}
 		ROOTFS_DIR=${ROOTFS_MNT}
 		echo "ECHO: "'rootfs_dir ='${ROOTFS_DIR}
 		run_func
@@ -725,7 +751,7 @@ set +e
 echo "Scr_MSG: Killing all processes in ---> ${ROOTFS_MNT}"
 PREFIX=${ROOTFS_MNT}
 kill_ch_proc
-
+set -e
 echo "#---------------------------------------------------------------------------------- "
 echo "#--------------------+++       gen-rootfs.sh End     +++--------------------------- "
 echo "#---------------------------------------------------------------------------------- "

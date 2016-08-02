@@ -126,7 +126,7 @@ echo "#----------------     +++ generating rootfs image  zzz  +++ ........  ----
 echo "#-----------------------------   wait   ----------------------------------------#"
 echo "#-------------------------------------------------------------------------------#"
 set -v
-sudo dd if=/dev/zero of=${ROOTFS_IMG}  bs=4K count=1400K
+sudo dd if=/dev/zero of=${ROOTFS_IMG}  bs=4K count=600K
 sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_options} ${ROOTFS_IMG} ${mkfs_label}"
 #sudo mke2fs -j -L "rootfs" ${ROOTFS_IMG}
 }

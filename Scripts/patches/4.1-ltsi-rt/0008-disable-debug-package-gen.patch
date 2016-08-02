@@ -1,7 +1,7 @@
-From be96394590c6c27d2368bd029517b8d255e26fb1 Mon Sep 17 00:00:00 2001
+From f672c6e7706984b1f0ff9f54f08d9490d1282d9c Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:41 +0200
-Subject: [PATCH 8/8] disable debug package gen
+Subject: [PATCH 8/9] disable debug package gen
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 6f798e4..aea26cb 100644
+index 2e7f062..82264b9 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -155,7 +155,7 @@ CONFIG_ROOT_NFS=y
