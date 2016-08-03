@@ -208,6 +208,11 @@ qt_configure(){
 qt_install_qwt(){
 sudo cp -R /usr/local/qwt-6.1.3 ${QT_ROOTFS_MNT}/usr/local/lib
 sudo sh -c 'echo "/usr/local/lib/qwt-6.1.3/lib" > '${QT_ROOTFS_MNT}'/etc/ld.so.conf.d/qt.conf'
+
+sudo sh -c 'echo "\nexport LD_LIBRARY_PATH=$PATH:/usr/local/lib/qwt-6.1.3/lib\n" >> '${QT_ROOTFS_MNT}'/etc/profile'
+sudo sh -c 'echo "\nexport LD_LIBRARY_PATH=$PATH:/usr/local/lib/qwt-6.1.3/lib\n" >> '${QT_ROOTFS_MNT}'/.bashrc'
+sudo sh -c 'echo "\nexport LD_LIBRARY_PATH=$PATH:/usr/local/lib/qwt-6.1.3/lib\n" >> '${QT_ROOTFS_MNT}'/.profile'
+
 sudo chroot --userspec=root:root ${QT_ROOTFS_MNT} /sbin/ldconfig
 }
 

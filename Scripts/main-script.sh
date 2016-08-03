@@ -720,11 +720,16 @@ echo ""
 echo "# -----------------    Changing hostname to ${hostname}    -------------"
 echo ""
 gen_hostname
+
+echo ""
+echo "Script_MSG: Enabling uio driver and fixing user permissions"
+echo ""
 if [ "${USER_NAME}" == "machinekit" ]; then 
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="hm2reg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uiohm2.conf'
 elif [ "${USER_NAME}" == "holosynth" ]; then 
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
 fi
+sudo sh -c 'echo "KERNEL==\"uio0\",MODE=\"666\"" > '$ROOTFS_MNT'/etc/udev/rules.d/10-local.rules'
 echo ""
 echo "# --------->       Removing qemu policy file          <--------------- ---------"
 echo ""
