@@ -22,7 +22,6 @@ protected:
     uint32_t *uio_mem_addr=NULL;
 
 //    bool m_bIsVideoEnabled;
-//    uint8_t *s_synthreg_base;
     bool Init();
 
 };

@@ -8,7 +8,6 @@
 #include <sys/mman.h>
 
 #include <QDebug>
-#include <QFile>
 
 #include <stdint.h>
 //#include <sys/ioctl.h>
@@ -64,35 +63,12 @@ bool FPGAFS::SynthregSet(unsigned int regadr, u_int8_t value){
     if (!m_bInitSuccess)
         return false;
     *((uint32_t *)(uio_mem_addr + regadr)) = value;
-//    QByteArray Buffer;
-//    Buffer.append(QString::number((regadr << 8) + value));
-//    QFile fileB(FILE_DEV);//
-//    if (!fileB.open(QIODevice::WriteOnly))
-//    {
-//        qDebug() << "Failed to open /dev/uio0 for writing\r\n";
-//        return false;
-//    }
-//    fileB.write(Buffer);
-//    fileB.close();
-//   alt_write_byte((void *) ( (u_int8_t *)synthreg_mem + ( ( uint32_t )( regadr + SYNTHREG_OFFSET) & ( uint32_t )( HW_REGS_MASK ) )) , value );
     return true;
 }
 
 u_int8_t FPGAFS::SynthregGet(unsigned int regaddr){
     u_int8_t value = 0;
-//    QByteArray Buffer;
-//    if (m_bInitSuccess){
-//        QFile fileB(FILE_DEV);//
-//        if (!fileB.open(QIODevice::ReadOnly))
-//        {
-//            qDebug() << "Failed to open /dev/uio0 for reading\r\n";
-//            return false;
-//        }
-//        Buffer=fileB.readAll();
-//        fileB.close();
-        value = *((uint32_t *)(uio_mem_addr + regaddr));
-//        value = alt_read_byte((void *) ( (u_int8_t *)synthreg_mem + ( ( uint32_t )( regaddr + SYNTHREG_OFFSET) & ( uint32_t )( HW_REGS_MASK ) )) );
-//    }
+    value = (*((uint32_t *)(uio_mem_addr + regaddr)) & 0xFF);
     return value;
 }
 

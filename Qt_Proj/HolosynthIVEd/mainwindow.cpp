@@ -16,8 +16,6 @@
 #include<QScrollBar>
 #include <QTouchEvent>
 
-//#define SYX_FILE_DIR "/home/root/prg/syx/"
-//#define SYX_FILE_DIR "/home/linaro/prg/syx/"
 #define SYX_FILE_DIR "/home/holosynth/prg/syx/"
 #define NUM_OSC 8
 
@@ -630,7 +628,7 @@ void synth1Tab::main_slider_val_change(int value)
 {
     unsigned int regaddress;
         regaddress = (Addressreg_y << 4) + Addressreg_x;
-        qDebug("slider change regaddress = 0x%x",regaddress);
+        qDebug("slider change regaddress = 0x%x  Set to value --> %d",regaddress,value);
         fpga->SynthregSet(regaddress,value);
         setLCD(regaddress, value);
 }
