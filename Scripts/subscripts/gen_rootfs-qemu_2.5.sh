@@ -28,7 +28,7 @@ DEFGROUPS="sudo,kmem,adm,dialout,holosynth,video,plugdev"
 # ,dhcpcd5
 #xserver-xorg-video-dummy,upower
 function run_qt_qemu_debootstrap {
-sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,lxde,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools,open-iscsi ${distro} ${ROOTFS_DIR} http://kubuntu16-srv.holotronic.lan/debian/
+sudo qemu-debootstrap --foreign --arch=armhf --variant=buildd  --keyring /usr/share/keyrings/debian-archive-keyring.gpg --include=sudo,locales,nano,vim,adduser,apt-utils,libssh2-1,openssh-client,openssh-server,openssl,kmod,dbus,dbus-x11,xorg,lightdm,xfce4,upower,rsyslog,udev,libpam-systemd,systemd-sysv,net-tools,lsof,less,accountsservice,iputils-ping,python,ifupdown,iproute2,dhcpcd5,avahi-daemon,uuid-runtime,avahi-discover,libnss-mdns,traceroute,strace,cgroupfs-mount,ntp,autofs,u-boot-tools,initramfs-tools,open-iscsi ${distro} ${ROOTFS_DIR} http://kubuntu16-srv.holotronic.lan/debian/
 }
 #
 function run_qemu_debootstrap {

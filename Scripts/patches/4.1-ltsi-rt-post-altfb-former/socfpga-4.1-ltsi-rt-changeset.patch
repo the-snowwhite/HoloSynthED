@@ -1,4 +1,4 @@
-From 7cfe3708b76e4bd01dc287565bd67d403c31d48e Mon Sep 17 00:00:00 2001
+From 3f16ece970a05a340e0c7bfa907c159de96d21b0 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:48:25 +0200
 Subject: [PATCH 01/13] add ext4 root fs support and autofs4 module
@@ -46,7 +46,7 @@ index 01e6811..1fb717a 100644
 2.7.4
 
 
-From 2d036a6bd4f0da430e50c65118edcb47a25cc733 Mon Sep 17 00:00:00 2001
+From 79d3fd4df2a95827cbf6a28260949181fbb1665c Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:52:00 +0200
 Subject: [PATCH 02/13] add uio driver support
@@ -74,7 +74,7 @@ index 1fb717a..cef8170 100644
 2.7.4
 
 
-From 6ea60ed2f66ff2cec077dcaa9154d4cc91007249 Mon Sep 17 00:00:00 2001
+From 105363bb7704da6662cbc73bcb8ac199783c478f Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:55:33 +0200
 Subject: [PATCH 03/13] add configfs and fpgacfg dts entities, and dynamic dts
@@ -102,7 +102,7 @@ index cef8170..d7fc496 100644
 2.7.4
 
 
-From 8d247e3d01f6ceb245a8a3036f318527467df1f4 Mon Sep 17 00:00:00 2001
+From e14950cd810a3e0eab1d96f98d7d17579c537b4b Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Wed, 29 Jun 2016 19:05:21 +0200
 Subject: [PATCH 04/13] add socfpga .dtb files to kernel-image .deb, and
@@ -143,7 +143,7 @@ index 88dbf23..67770e9 100755
 2.7.4
 
 
-From 401993f91f4d2dc5ee79c73cdbf0fb9c19e00bd5 Mon Sep 17 00:00:00 2001
+From 620ad4fbd373e12feff64d4da0e821ea8fa8deed Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:10:28 +0200
 Subject: [PATCH 05/13] disable CONFIG_LOCALVERSION_AUTO for consistant
@@ -167,7 +167,7 @@ index d7fc496..84dbda7 100644
 2.7.4
 
 
-From 0b7987de30be957acbe78c7960c9c1fb4382f772 Mon Sep 17 00:00:00 2001
+From aaa7589b4a3aafc56b91e41055af6e9c5da29a32 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:13:51 +0200
 Subject: [PATCH 06/13] enable jumboframes maxmtu=9000
@@ -194,7 +194,7 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From c3a89bfb02d90f4a8fcfea3561e7976872ea2532 Mon Sep 17 00:00:00 2001
+From af034d1c18fec7733a7972dc9a9e85c847af64de Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:11 +0200
 Subject: [PATCH 07/13] enable initramfs
@@ -226,7 +226,7 @@ index 84dbda7..2e7f062 100644
 2.7.4
 
 
-From 76a3614c72b0d80827e536834d8d67c2491cd272 Mon Sep 17 00:00:00 2001
+From 5063a36f461b84771cede8f5fb1108d66399ddc6 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:41 +0200
 Subject: [PATCH 08/13] disable debug package gen
@@ -253,7 +253,7 @@ index 2e7f062..82264b9 100644
 2.7.4
 
 
-From e403fc780970d716098c95ce5638d998d2732960 Mon Sep 17 00:00:00 2001
+From 9f4231f51611126ece02e841d1f3520106544d3f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 19:32:34 +0200
 Subject: [PATCH 09/13] enable alt vip framebuffer in kernel
@@ -293,7 +293,7 @@ index 82264b9..b8b8216f 100644
 2.7.4
 
 
-From ab64b03118c47ce664021faba0cdaac15c43b065 Mon Sep 17 00:00:00 2001
+From 7e7f8799ef5118b2534815d0737fef479d0362f2 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Thu, 4 Aug 2016 19:09:30 +0200
 Subject: [PATCH 10/13] increase max framebuffersize twice above 4MB(fixes more
@@ -352,7 +352,7 @@ index b8b8216f..aa104e2 100644
 2.7.4
 
 
-From 1be61b2fce245df9eeeccda262290cee61c3a8c1 Mon Sep 17 00:00:00 2001
+From d804a4025403e228e420dc326af04e7a0ffe7395 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 6 Aug 2016 15:49:31 +0200
 Subject: [PATCH 11/13] add generate /boot/uEnv.txt containing kernel info for
@@ -385,7 +385,7 @@ index 67770e9..3e0abd0 100755
 2.7.4
 
 
-From 45b1fdc3a44a6cc0b60a3249344cc01c68ca3118 Mon Sep 17 00:00:00 2001
+From 6f2a7d27d164288f78fa1329c0644dac2f373d80 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 7 Aug 2016 00:33:02 +0200
 Subject: [PATCH 12/13] changed alt_vip_fb to module added opencores fb driver,
@@ -489,35 +489,24 @@ index aa104e2..8eae8c0 100644
 2.7.4
 
 
-From 7fa1be85507ab363344a44d54b3326b5af5292b7 Mon Sep 17 00:00:00 2001
+From 94ce52d96244f1a84a7fab1814c659ca266e8fb8 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 8 Aug 2016 02:50:00 +0200
 Subject: [PATCH 13/13] re-add altfb and config changes
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
- arch/arm/configs/socfpga_defconfig |  26 +-
+ arch/arm/configs/socfpga_defconfig |  18 +-
  drivers/video/fbdev/Kconfig        |  10 +
  drivers/video/fbdev/Makefile       |   1 +
  drivers/video/fbdev/altfb.c        | 484 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 512 insertions(+), 9 deletions(-)
+ 4 files changed, 508 insertions(+), 5 deletions(-)
  create mode 100755 drivers/video/fbdev/altfb.c
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 8eae8c0..793bffc 100644
+index 8eae8c0..413340b 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -163,8 +163,8 @@ CONFIG_FUNCTION_TRACER=y
- CONFIG_DEBUG_USER=y
- CONFIG_XZ_DEC=y
- CONFIG_UIO=y
--CONFIG_UIO_PDRV=m
--CONFIG_UIO_PDRV_GENIRQ=m
-+CONFIG_UIO_PDRV=y
-+CONFIG_UIO_PDRV_GENIRQ=y
- CONFIG_CONFIGFS_FS=y
- CONFIG_OF_OVERLAY=y
- CONFIG_LOCALVERSION_AUTO=n
 @@ -180,18 +180,24 @@ CONFIG_RD_LZO=y
  CONFIG_RD_LZ4=y
  CONFIG_VT_HW_CONSOLE_BINDING=y
@@ -548,17 +537,6 @@ index 8eae8c0..793bffc 100644
  CONFIG_VGACON_SOFT_SCROLLBACK=y
  CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
  CONFIG_FRAMEBUFFER_CONSOLE=y
-@@ -230,8 +236,8 @@ CONFIG_IR_SHARP_DECODER=m
- CONFIG_IR_MCE_KBD_DECODER=m
- CONFIG_IR_XMP_DECODER=m
- CONFIG_MEDIA_USB_SUPPORT=y
--CONFIG_VGA_ARB=y
--CONFIG_VGA_ARB_MAX_GPUS=16
-+##CONFIG_VGA_ARB=y
-+##CONFIG_VGA_ARB_MAX_GPUS=16
- CONFIG_SOUND=m
- CONFIG_SOUND_OSS_CORE=y
- CONFIG_SOUND_OSS_CORE_PRECLAIM=y
 @@ -273,3 +279,5 @@ CONFIG_SND_SOC_SSM2602_I2C=m
  CONFIG_HIDRAW=y
  CONFIG_HID_PID=y

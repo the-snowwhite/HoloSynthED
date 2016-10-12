@@ -1,4 +1,4 @@
-From 2d036a6bd4f0da430e50c65118edcb47a25cc733 Mon Sep 17 00:00:00 2001
+From 79d3fd4df2a95827cbf6a28260949181fbb1665c Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:52:00 +0200
 Subject: [PATCH 02/13] add uio driver support

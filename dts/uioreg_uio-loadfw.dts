@@ -9,8 +9,8 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			ranges = <0x00000000 0xff240000 0x00010000>;
-			external-fpga-config;
+			ranges = <0x00040000 0xff240000 0x00010000>;
+			firmware-name = "socfpga/DE1_SOC_Linux_FB.rbf";
 
 			uioreg_io_0: uio-socfpg0@0x40000 {
 				compatible = "uioreg_io,generic-uio,ui_pdrv";

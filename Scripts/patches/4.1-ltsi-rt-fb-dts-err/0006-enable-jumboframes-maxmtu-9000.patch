@@ -1,7 +1,7 @@
-From 0b7987de30be957acbe78c7960c9c1fb4382f772 Mon Sep 17 00:00:00 2001
+From e9d6f4a588f77ad9442f3d3b79fb5669fad76116 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:13:51 +0200
-Subject: [PATCH 06/13] enable jumboframes maxmtu=9000
+Subject: [PATCH 6/9] enable jumboframes maxmtu=9000
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---

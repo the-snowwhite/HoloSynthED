@@ -1,4 +1,4 @@
-From c3a89bfb02d90f4a8fcfea3561e7976872ea2532 Mon Sep 17 00:00:00 2001
+From af034d1c18fec7733a7972dc9a9e85c847af64de Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:11 +0200
 Subject: [PATCH 07/13] enable initramfs

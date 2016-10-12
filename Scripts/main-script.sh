@@ -29,18 +29,19 @@ USER_NAME=holosynth;
 # 
 #BUILD_UBOOT="yes";
 # # 
-BUILD_KERNEL="yes";
+#BUILD_KERNEL="yes";
 # # 
 #GREATE_ROOTFS_IMAGE="yes";
+#CUSTOM_PREFIX="3.10-updated"
 # #
 #GEN_ROOTFS="yes";
 #
 #ADD_SD_USER="yes"; 
 # 
 #INST_QT="yes";INST_QT_DEPS="yes"; 
-# #  INST_LOCALKERNEL_DEBS="yes";#MAKE_UINITRD="yes";
+##	#INST_LOCALKERNEL_DEBS="yes";#MAKE_UINITRD="yes";
 #
-#INST_REPOKERNEL_DEBS="yes";MAKE_UINITRD="yes";
+INST_REPOKERNEL_DEBS="yes";MAKE_UINITRD="yes";
 # #	ISCSI_CONV="yes";
 #
 #
@@ -57,6 +58,8 @@ WORK_DIR=${1}
 
 MAIN_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SUB_SCRIPT_DIR=${MAIN_SCRIPT_DIR}/subscripts
+DTS_DIR=${MAIN_SCRIPT_DIR}/../dts
+
 CURRENT_DIR=`pwd`
 #ROOTFS_MNT=/mnt/rootfs
 ROOTFS_MNT=/tmp/myimage
@@ -80,6 +83,8 @@ ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
 ALT_GIT_KERNEL_BRANCH="socfpga-${ALT_GIT_KERNEL_VERSION}"
 
 QTDIR=/home/mib/qt-src/qt-everywhere-opensource-src-5.4.1
+
+POLICY_FILE=${ROOTFS_MNT}/usr/sbin/policy-rc.d
 
 #------------------------------------------------------------------------------------------------------
 # Variables Custom settings
@@ -398,7 +403,7 @@ if [ ! -z "${COMP_PREFIX}" ]; then
 	## extract rootfs into image:
 	COMPNAME=${COMP_REL}_${COMP_PREFIX}
 	sudo tar xfj ${CURRENT_DIR}/${COMPNAME}-rootfs.tar.bz2 -C ${ROOTFS_MNT}
-	echo "${COMPNAME} rootfs extraction finished .."
+	echo "${CURRENT_DIR}/${COMPNAME}-rootfs.tar.bz2 rootfs extraction finished .."
 fi
 }
 
@@ -546,7 +551,7 @@ set -e
 sudo rm -f ${ROOTFS_MNT}/etc/resolv.conf
 sudo cp /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
 
-echo "Script_MSG: will add user"
+echo "Script_MSG: Now adding user: ${USER_NAME}"
 gen_add_user_sh
 echo "Script_MSG: gen_add_user_sh finished ... will now run in chroot"
 
@@ -569,7 +574,7 @@ sudo chroot ${ROOTFS_MNT} /bin/bash -c /home/initial.sh
 sudo sync
 
 cd ${CURRENT_DIR}
-sudo cp -f ${CURRENT_DIR}/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
+sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
 
 echo "Script_MSG: initial_rootfs_user_setup_sh finished .. ok .."
 
@@ -670,6 +675,15 @@ sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv 4FD9D713
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes upgrade
+
+echo ""
+echo "# --------->       Removing qemu policy file          <--------------- ---------"
+echo ""
+if [ -f ${POLICY_FILE} ]; then
+    echo "removing ${POLICY_FILE}"
+    sudo rm -f ${POLICY_FILE}
+fi
+
 echo ""
 echo "Script_MSG: Will now install kernel packages"
 echo ""
@@ -705,6 +719,25 @@ EOT'
 
 }
 
+inst_dtbstuff(){
+
+sudo cp ${DTS_DIR}/hsynth_fb.sh ${ROOTFS_MNT}/etc/init.d/
+sudo cp ${DTS_DIR}/uioreg_uio.sh ${ROOTFS_MNT}/etc/init.d/
+sudo chmod +x ${ROOTFS_MNT}/etc/init.d/hsynth_fb.sh
+sudo chmod +x ${ROOTFS_MNT}/etc/init.d/uioreg_uio.sh
+
+sudo mkdir -p ${ROOTFS_MNT}/lib/firmware/socfpga
+sudo dtc -I dts -O dtb -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/uioreg_uio.dts
+sudo dtc -I dts -O dtb -o ${ROOTFS_MNT}/lib/firmware/socfpga/hsynth_fb.dtbo ${DTS_DIR}/hsynth_fb.dts
+
+sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
+sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/boot
+
+sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d uioreg_uio.sh defaults
+sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d hsynth_fb.sh defaults
+
+}
+
 finalize() {
 echo "#-------------------------------------------------------------------------------#"
 echo "#-------------------------------------------------------------------------------#"
@@ -728,13 +761,12 @@ if [ "${USER_NAME}" == "machinekit" ]; then
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="hm2reg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uiohm2.conf'
 elif [ "${USER_NAME}" == "holosynth" ]; then 
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
+	inst_dtbstuff
 fi
 sudo sh -c 'echo "KERNEL==\"uio0\",MODE=\"666\"" > '$ROOTFS_MNT'/etc/udev/rules.d/10-local.rules'
 echo ""
 echo "# --------->       Removing qemu policy file          <--------------- ---------"
 echo ""
-
-POLICY_FILE=${ROOTFS_MNT}/usr/sbin/policy-rc.d
 
 if [ -f ${POLICY_FILE} ]; then
     echo "removing ${POLICY_FILE}"
@@ -822,7 +854,7 @@ set -e
 	fi
 
 	if [[ ${BUILD_KERNEL} == 'yes' ]]; then
-		build_kernel
+#		build_kernel
 		add_kernel2repo
 	fi
 
@@ -932,7 +964,11 @@ set -e
 	elif  [ "${USER_NAME}" == "holosynth" ]; then
 		COMP_PREFIX=final_${USER_NAME}_qt-with-kernel
 	fi
-
+	
+	if [ ! -z "${CUSTOM_PREFIX}" ]; then
+		COMP_PREFIX=${CUSTOM_PREFIX}
+	fi
+	
 	if [[ ${CREATE_BMAP} == 'yes' ]]; then ## replace old image with a fresh:
 		IMG_PARTS=2
 		create_image
@@ -947,6 +983,7 @@ set -e
 			
 		finalize
 		unmount_sdimagefile
+		
 		if [[ ${INST_UBOOT} == 'yes' ]]; then
 			echo "NOTE:  Will now install u-boot --> onto sd-card-image:"
 			echo "--> ${SD_IMG_FILE}"

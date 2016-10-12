@@ -9,30 +9,18 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			ranges = <0x00040000 0xff240000 0x00010000>,
-						<0x00000100 0xff200100 0x00000080>;
-
+			ranges = <0x00000100 0xff200100 0x00000080>;
 			firmware-name = "socfpga/DE1_SOC_Linux_FB.rbf";
 
-			uioreg_io_0: uio-socfpg0@0x40000 {
-				compatible = "uioreg_io,generic-uio,ui_pdrv";
-				reg = <0x40000 0x10000>;
-				interrupt-parent = <0x2>;
-				interrupts = <0 43 4>;
-				clocks = <&osc1>;
-				address_width = <14>;
-				data_width = <32>;
-			};
-
-			alt_vip_vfr_vga: vip@0xff200100 {
+			alt_vip_vfr_vga: vip@0x00100 {
 				compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
-				reg = <0xff200100 0x00000080>;
+				reg = <0x00100 0x00080>;
 				clocks = <0 0 &osc1>;
-				max-width = <1024>;	/* MAX_IMAGE_WIDTH type NUMBER */
+				max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
 				max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
 				bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
-				colors-per-beat = <0x4>;
-				beats-per-pixel = <0x1>;
+				colors-per-beat = <4>;
+				beats-per-pixel = <1>;
 				mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
 			};
 		};

@@ -1,4 +1,4 @@
-From 401993f91f4d2dc5ee79c73cdbf0fb9c19e00bd5 Mon Sep 17 00:00:00 2001
+From 620ad4fbd373e12feff64d4da0e821ea8fa8deed Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:10:28 +0200
 Subject: [PATCH 05/13] disable CONFIG_LOCALVERSION_AUTO for consistant

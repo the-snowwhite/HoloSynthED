@@ -1,0 +1,490 @@
+From ca593e1ae8ccba39f1690155cb5f5246fa83f594 Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Sun, 26 Jun 2016 11:48:25 +0200
+Subject: [PATCH 01/12] add ext4 root fs support and autofs4 module
+
+Signed-off-by: Michael Brown <mib@localhost.localdomain>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 01e6811..1fb717a 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -11,7 +11,7 @@ CONFIG_EMBEDDED=y
+ CONFIG_PROFILING=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+-# CONFIG_LBDAF is not set
++CONFIG_LBDAF=y
+ # CONFIG_BLK_DEV_BSG is not set
+ # CONFIG_IOSCHED_DEADLINE is not set
+ # CONFIG_IOSCHED_CFQ is not set
+@@ -139,6 +139,9 @@ CONFIG_EXT2_FS_XATTR=y
+ CONFIG_EXT2_FS_POSIX_ACL=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
++CONFIG_EXT4_FS_XATTR=y
++CONFIG_EXT4_FS_POSIX_ACL=y
++CONFIG_EXT4_FS_SECURITY=y
+ # CONFIG_DNOTIFY is not set
+ CONFIG_VFAT_FS=y
+ CONFIG_NTFS_FS=y
+@@ -146,6 +149,7 @@ CONFIG_NTFS_RW=y
+ CONFIG_TMPFS=y
+ CONFIG_JFFS2_FS=y
+ CONFIG_NFS_FS=y
++CONFIG_AUTOFS4_FS=y
+ CONFIG_NFS_V4=y
+ CONFIG_ROOT_NFS=y
+ CONFIG_NLS_CODEPAGE_437=y
+-- 
+2.7.4
+
+
+From beffe68e4885c60150983e20b91d3418e26ab3fb Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Sun, 26 Jun 2016 11:52:00 +0200
+Subject: [PATCH 02/12] add uio driver support
+
+Signed-off-by: Michael Brown <mib@localhost.localdomain>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 1fb717a..cef8170 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -162,3 +162,6 @@ CONFIG_DETECT_HUNG_TASK=y
+ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
++CONFIG_UIO=y
++CONFIG_UIO_PDRV=m
++CONFIG_UIO_PDRV_GENIRQ=m
+-- 
+2.7.4
+
+
+From 206fb135226097e5e70b98687ffca1ff97589da3 Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Sun, 26 Jun 2016 11:55:33 +0200
+Subject: [PATCH 03/12] add configfs and fpgacfg dts entities, and dynamic dts
+ overlay support options
+
+Signed-off-by: Michael Brown <mib@localhost.localdomain>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index cef8170..d7fc496 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -165,3 +165,5 @@ CONFIG_XZ_DEC=y
+ CONFIG_UIO=y
+ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
++CONFIG_CONFIGFS_FS=y
++CONFIG_OF_OVERLAY=y
+-- 
+2.7.4
+
+
+From adec2733f4bf6c5a765756e5e26117d61603410a Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Wed, 29 Jun 2016 19:05:21 +0200
+Subject: [PATCH 04/12] add socfpga .dtb files to kernel-image .deb, and
+ install in folder /boot/dtb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+Signed-off-by: the-snowwhite <producer@holotronic.dk>
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ scripts/package/builddeb | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 88dbf23..67770e9 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -110,7 +110,7 @@ BUILD_DEBUG="$(grep -s '^CONFIG_DEBUG_INFO=y' $KCONFIG_CONFIG || true)"
+ # Setup the directory structure
+ rm -rf "$tmpdir" "$fwdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir"
+ mkdir -m 755 -p "$tmpdir/DEBIAN"
+-mkdir -p  "$tmpdir/lib" "$tmpdir/boot" "$tmpdir/usr/share/doc/$packagename"
++mkdir -p  "$tmpdir/lib" "$tmpdir/boot/dtb" "$tmpdir/usr/share/doc/$packagename"
+ mkdir -m 755 -p "$fwdir/DEBIAN"
+ mkdir -p "$fwdir/lib/firmware/$version/" "$fwdir/usr/share/doc/$fwpackagename"
+ mkdir -m 755 -p "$libc_headers_dir/DEBIAN"
+@@ -139,8 +139,10 @@ fi
+ # Not all arches include the boot path in KBUILD_IMAGE
+ if [ -e $KBUILD_IMAGE ]; then
+ 	cp $KBUILD_IMAGE "$tmpdir/$installed_image_path"
++	cp dts/*.dtb "$tmpdir/boot/dtb"
+ else
+ 	cp arch/$ARCH/boot/$KBUILD_IMAGE "$tmpdir/$installed_image_path"
++	cp arch/$ARCH/boot/dts/*.dtb "$tmpdir/boot/dtb"
+ fi
+ 
+ if grep -q '^CONFIG_MODULES=y' $KCONFIG_CONFIG ; then
+-- 
+2.7.4
+
+
+From a8ce585564ef8356e2ffa7f2486e10ef7f9ba0c6 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:10:28 +0200
+Subject: [PATCH 05/12] disable CONFIG_LOCALVERSION_AUTO for consistant
+ apt-updatable kernelversion name
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index d7fc496..84dbda7 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -167,3 +167,4 @@ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
++CONFIG_LOCALVERSION_AUTO=n
+-- 
+2.7.4
+
+
+From c08d3cef625235d5674f58706820612d04cb4ea0 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:13:51 +0200
+Subject: [PATCH 06/12] enable jumboframes maxmtu=9000
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+index 555e9ca..5b79c0c 100644
+--- a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
++++ b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+@@ -69,7 +69,7 @@
+ 	rxdv-skew-ps = <420>; /* 0ps */
+ 	rxc-skew-ps = <1680>; /* 780ps */
+ 
+-	max-frame-size = <3800>;
++	max-frame-size = <9000>;
+ };
+ 
+ &gpio0 {
+-- 
+2.7.4
+
+
+From 40e980fe272c2eaab52efd4151c5b73b642bacc1 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:18:11 +0200
+Subject: [PATCH 07/12] enable initramfs
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 84dbda7..2e7f062 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -168,3 +168,13 @@ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_LOCALVERSION_AUTO=n
++CONFIG_BLK_DEV_INITRD=y
++CONFIG_INITRAMFS_SOURCE=""
++CONFIG_INITRAMFS_ROOT_UID=0
++CONFIG_INITRAMFS_ROOT_GID=0
++CONFIG_RD_GZIP=y
++CONFIG_RD_BZIP2=y
++CONFIG_RD_LZMA=y
++CONFIG_RD_XZ=y
++CONFIG_RD_LZO=y
++CONFIG_RD_LZ4=y
+-- 
+2.7.4
+
+
+From 58e82ffbcab0e53173e924670d09b82cb90901a8 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:18:41 +0200
+Subject: [PATCH 08/12] disable debug package gen
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 2e7f062..82264b9 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -155,7 +155,7 @@ CONFIG_ROOT_NFS=y
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ISO8859_1=y
+ CONFIG_PRINTK_TIME=y
+-CONFIG_DEBUG_INFO=y
++CONFIG_DEBUG_INFO=n
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DETECT_HUNG_TASK=y
+ # CONFIG_SCHED_DEBUG is not set
+-- 
+2.7.4
+
+
+From 7a0c3ac0e68cec3a505c151c8a00d4772f87558e Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 19:32:34 +0200
+Subject: [PATCH 09/12] enable alt vip framebuffer in kernel
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 82264b9..b8b8216f 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -178,3 +178,21 @@ CONFIG_RD_LZMA=y
+ CONFIG_RD_XZ=y
+ CONFIG_RD_LZO=y
+ CONFIG_RD_LZ4=y
++CONFIG_VT_HW_CONSOLE_BINDING=y
++CONFIG_FB=y
++CONFIG_FB_CFB_FILLRECT=y
++CONFIG_FB_CFB_COPYAREA=y
++CONFIG_FB_CFB_IMAGEBLIT=y
++CONFIG_FB_ALTERA_VIP=y
++CONFIG_VGACON_SOFT_SCROLLBACK=y
++CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
++CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
++CONFIG_LOGO=y
++CONFIG_LOGO_LINUX_MONO=y
++CONFIG_LOGO_LINUX_VGA16=y
++CONFIG_LOGO_LINUX_CLUT224=y
++CONFIG_FONT_SUPPORT=y
++CONFIG_FONT_8x8=y
++CONFIG_FONT_8x16=y
+-- 
+2.7.4
+
+
+From 4006b0a0e6d33d308c653bd4d3836d1197398790 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Thu, 4 Aug 2016 19:09:30 +0200
+Subject: [PATCH 10/12] increase max framebuffersize twice above 4MB(fixes more
+ than 1024x768x8 resolution), and enable cma
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/Kconfig                   |  6 +++---
+ arch/arm/configs/socfpga_defconfig | 10 +++++++++-
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index e16a259..7d02aef 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1687,10 +1687,10 @@ source "mm/Kconfig"
+ 
+ config FORCE_MAX_ZONEORDER
+ 	int "Maximum zone order" if ARCH_SHMOBILE_LEGACY
+-	range 11 64 if ARCH_SHMOBILE_LEGACY
+-	default "12" if SOC_AM33XX
++	range 11 64 if ARCH_SHMOBILE_LEGACY || ARCH_SOCFPGA
++	range 11 64 if SOC_AM33XX || ARCH_SOCFPGA
+ 	default "9" if SA1111 || ARCH_EFM32
+-	default "11"
++	default "13"
+ 	help
+ 	  The kernel memory allocator divides physically contiguous memory
+ 	  blocks into "zones", where each zone is a power of two number of
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index b8b8216f..aa104e2 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -187,7 +187,6 @@ CONFIG_FB_ALTERA_VIP=y
+ CONFIG_VGACON_SOFT_SCROLLBACK=y
+ CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+-CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
+ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
+ CONFIG_LOGO=y
+ CONFIG_LOGO_LINUX_MONO=y
+@@ -196,3 +195,12 @@ CONFIG_LOGO_LINUX_CLUT224=y
+ CONFIG_FONT_SUPPORT=y
+ CONFIG_FONT_8x8=y
+ CONFIG_FONT_8x16=y
++CONFIG_FORCE_MAX_ZONEORDER=13
++CONFIG_DMA_CMA=y
++CONFIG_MEMORY_ISOLATION=y
++CONFIG_CMA=y
++CONFIG_CMA_DEBUG=y
++CONFIG_CMA_SIZE_MBYTES=512
++CONFIG_CMA_SIZE_SEL_MBYTES=y
++CONFIG_CMA_ALIGNMENT=8
++CONFIG_CMA_AREAS=7
+-- 
+2.7.4
+
+
+From 4ff24e745955b4f825b415cd2618c88f50f5abe8 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sat, 6 Aug 2016 15:49:31 +0200
+Subject: [PATCH 11/12] add generate /boot/uEnv.txt containing kernel info for
+ uboot probing
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ scripts/package/builddeb | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 67770e9..3e0abd0 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -183,6 +183,13 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
+ else
+ 	want_initrd=No
+ fi
++ 
++# create uEnv.txt containing current kernelversio in /boot folder (for u-boot probing)
++	cat <<EOF > "$tmpdir/boot/uEnv.txt"
++kver=${version}
++initrd_installed=$want_initrd
++EOF
++
+ for script in postinst postrm preinst prerm ; do
+ 	mkdir -p "$tmpdir$debhookdir/$script.d"
+ 	cat <<EOF > "$tmpdir/DEBIAN/$script"
+-- 
+2.7.4
+
+
+From a30323b1a0ba95700a82ada6814a81453691fb94 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 7 Aug 2016 00:33:02 +0200
+Subject: [PATCH 12/12] changed alt_vip_fb to module added opencores fb driver,
+ plus some sound and mm related drivers added
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 71 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 70 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index aa104e2..8eae8c0 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -180,10 +180,18 @@ CONFIG_RD_LZO=y
+ CONFIG_RD_LZ4=y
+ CONFIG_VT_HW_CONSOLE_BINDING=y
+ CONFIG_FB=y
++CONFIG_FB_BOOT_VESA_SUPPORT=y
+ CONFIG_FB_CFB_FILLRECT=y
+ CONFIG_FB_CFB_COPYAREA=y
+ CONFIG_FB_CFB_IMAGEBLIT=y
+-CONFIG_FB_ALTERA_VIP=y
++CONFIG_FB_BOOT_VESA_SUPPORT=y
++CONFIG_FB_FOREIGN_ENDIAN=y
++CONFIG_FB_BOTH_ENDIAN=y
++CONFIG_FB_MODE_HELPERS=y
++CONFIG_FB_ALTERA_VIP=m
++CONFIG_FB_VESA=y
++CONFIG_FB_OPENCORES=m
++CONFIG_FB_SIMPLE=y
+ CONFIG_VGACON_SOFT_SCROLLBACK=y
+ CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+@@ -204,3 +212,64 @@ CONFIG_CMA_SIZE_MBYTES=512
+ CONFIG_CMA_SIZE_SEL_MBYTES=y
+ CONFIG_CMA_ALIGNMENT=8
+ CONFIG_CMA_AREAS=7
++CONFIG_REGMAP_I2C=m
++CONFIG_REGMAP_SPI=m
++CONFIG_MEDIA_SUPPORT=m
++CONFIG_MEDIA_RC_SUPPORT=y
++CONFIG_VIDEO_ADV_DEBUG=y
++CONFIG_RC_CORE=m
++CONFIG_RC_MAP=m
++CONFIG_RC_DECODERS=y
++CONFIG_IR_NEC_DECODER=m
++CONFIG_IR_RC5_DECODER=m
++CONFIG_IR_RC6_DECODER=m
++CONFIG_IR_JVC_DECODER=m
++CONFIG_IR_SONY_DECODER=m
++CONFIG_IR_SANYO_DECODER=m
++CONFIG_IR_SHARP_DECODER=m
++CONFIG_IR_MCE_KBD_DECODER=m
++CONFIG_IR_XMP_DECODER=m
++CONFIG_MEDIA_USB_SUPPORT=y
++CONFIG_VGA_ARB=y
++CONFIG_VGA_ARB_MAX_GPUS=16
++CONFIG_SOUND=m
++CONFIG_SOUND_OSS_CORE=y
++CONFIG_SOUND_OSS_CORE_PRECLAIM=y
++CONFIG_SND=m
++CONFIG_SND_TIMER=m
++CONFIG_SND_PCM=m
++CONFIG_SND_COMPRESS_OFFLOAD=m
++CONFIG_SND_JACK=y
++CONFIG_SND_SEQUENCER=m
++CONFIG_SND_OSSEMUL=y
++CONFIG_SND_MIXER_OSS=m
++CONFIG_SND_PCM_OSS=m
++CONFIG_SND_PCM_OSS_PLUGINS=y
++CONFIG_SND_SEQUENCER_OSS=y
++CONFIG_SND_SUPPORT_OLD_API=y
++CONFIG_SND_VERBOSE_PROCFS=y
++CONFIG_SND_VERBOSE_PRINTK=y
++CONFIG_SND_DMA_SGBUF=y
++CONFIG_SND_DRIVERS=y
++CONFIG_SND_PCI=y
++CONFIG_SND_SPI=y
++CONFIG_SND_USB=y
++CONFIG_SND_SOC=m
++CONFIG_SND_ATMEL_SOC=m
++CONFIG_SND_SST_MFLD_PLATFORM=m
++CONFIG_SND_SST_IPC=m
++CONFIG_SND_SST_IPC_ACPI=m
++CONFIG_SND_SOC_INTEL_BYTCR_RT5640_MACH=m
++CONFIG_SND_SOC_I2C_AND_SPI=m
++CONFIG_SND_SOC_HDMI_CODEC=m
++CONFIG_SND_SOC_RL6231=m
++CONFIG_SND_SOC_RT5640=m
++CONFIG_SND_SOC_SIGMADSP=m
++CONFIG_SND_SOC_SIGMADSP_I2C=m
++CONFIG_SND_SOC_SPDIF=m
++CONFIG_SND_SOC_SSM2602=m
++CONFIG_SND_SOC_SSM2602_SPI=m
++CONFIG_SND_SOC_SSM2602_I2C=m
++CONFIG_HIDRAW=y
++CONFIG_HID_PID=y
++CONFIG_USB_HIDDEV=y
+-- 
+2.7.4
+
