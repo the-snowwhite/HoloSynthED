@@ -31,7 +31,7 @@ USER_NAME=holosynth;
 # # 
 #BUILD_KERNEL="yes";
 # # 
-#GREATE_ROOTFS_IMAGE="yes";
+GREATE_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
 #GEN_ROOTFS="yes";
@@ -45,7 +45,7 @@ INST_REPOKERNEL_DEBS="yes";MAKE_UINITRD="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-#CREATE_BMAP="yes"; INST_UBOOT="yes";
+CREATE_BMAP="yes"; INST_UBOOT="yes";
 # 
 
 
@@ -77,8 +77,8 @@ PCH52_CC_FOLDER_NAME="gcc-linaro-5.2-2015.11-1-x86_64_arm-linux-gnueabihf"
 PCH52_CC_FILE="${PCH52_CC_FOLDER_NAME}.tar.xz"
 PCH52_CC_URL="http://releases.linaro.org/components/toolchain/binaries/5.2-2015.11-1/arm-linux-gnueabihf/${PCH52_CC_FILE}"
 
-ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
-#ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
+ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
 
 ALT_GIT_KERNEL_BRANCH="socfpga-${ALT_GIT_KERNEL_VERSION}"
 
@@ -127,6 +127,7 @@ CC_URL=$PCH52_CC_URL
 EnableSystemdNetworkedLink='/etc/systemd/system/multi-user.target.wants/systemd-networkd.service'
 EnableSystemdResolvedLink='/etc/systemd/system/multi-user.target.wants/systemd-resolved.service'
 
+REPO_DIR="/var/www/repos/apt/debian"
 
 #------------------------------------------------------------------------------------------------------
 # Variables Postrequsites
@@ -160,8 +161,8 @@ KERNEL_PARENT_DIR=${CURRENT_DIR}/arm-linux-${KERNEL_MIDDLE_NAME}-gnueabifh-kerne
 
 UBOOT_SPLFILE=${CURRENT_DIR}/uboot/${UBOOT_MAKE_CONFIG}
 
-#KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
-KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
+KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
+#KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
 
 #-----------------------------------------------------------------------------------
 # local functions for external scripts
@@ -586,13 +587,12 @@ echo "#--------------------------- Script start --------------------------------
 echo "#--->                        Add Kernel to Repo                           <---#"
 echo "#--------------------------- Script start ------------------------------------#"
 #sudo systemctl stop apache2
-cd /var/www/repos/apt/debian 
 
 echo ""
 echo "Scr_MSG: Repo content before -->"
 echo ""
-LIST1=`sudo reprepro -C main -A armhf --list-format='''${package}\n''' list jessie`
-LIST2=`sudo reprepro -C main -A armhf --list-format='''${package}\n''' list jessie`
+LIST1=`reprepro -b ${REPO_DIR} -C main -A armhf --list-format='''${package}\n''' list jessie`
+LIST2=`reprepro -b ${REPO_DIR} -C main -A armhf --list-format='''${package}\n''' list jessie`
 
 JESSIE_LIST1=$"${LIST1}"
 
@@ -604,7 +604,7 @@ if [ ! -z "${JESSIE_LIST1}" ]; then
 	echo ""
 	echo "Scr_MSG: Will clean repo"
 	echo ""
-	sudo reprepro -C main -A armhf remove jessie ${JESSIE_LIST1}
+	reprepro -b ${REPO_DIR} -C main -A armhf remove jessie ${JESSIE_LIST1}
 else
 	echo ""
 	echo "Scr_MSG: Repo is empty"
@@ -612,13 +612,13 @@ else
 fi
 echo ""
 
-sudo reprepro -C main -A armhf includedeb jessie ${KERNEL_PARENT_DIR}/*.deb
-sudo reprepro export jessie
+reprepro -b ${REPO_DIR} -C main -A armhf includedeb jessie ${KERNEL_PARENT_DIR}/*.deb
+reprepro -b ${REPO_DIR} export jessie
 echo "Scr_MSG: Restarting web server"
 
 sudo systemctl restart apache2
-sudo reprepro export jessie
-sudo reprepro -C main -A armhf list jessie
+reprepro -b ${REPO_DIR} export jessie
+reprepro -b ${REPO_DIR} -C main -A armhf list jessie
 
 JESSIE_LIST2=$"${LIST2}"
 echo ""
@@ -669,7 +669,7 @@ echo ""
 echo "Script_MSG: Will now add key to kubuntu16-ws"
 echo ""
 set +e
-sudo sh -c 'wget -O - http://kubuntu16-ws.holotronic.lan/debian/socfpgakernels.key|apt-key add -'
+sudo sh -c 'wget -O - http://kubuntu16-ws.holotronic.lan/debian/socfpgakernel.gpg.key|apt-key add -'
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv 4FD9D713
@@ -687,7 +687,7 @@ fi
 echo ""
 echo "Script_MSG: Will now install kernel packages"
 echo ""
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install --reinstall linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG}
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG} linux-libc-dev > /dev/null
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG}
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b linux-image-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b
 # #linux-image-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b
@@ -854,7 +854,7 @@ set -e
 	fi
 
 	if [[ ${BUILD_KERNEL} == 'yes' ]]; then
-#		build_kernel
+		build_kernel
 		add_kernel2repo
 	fi
 
