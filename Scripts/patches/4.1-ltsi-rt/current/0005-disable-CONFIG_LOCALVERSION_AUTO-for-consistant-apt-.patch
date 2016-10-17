@@ -1,7 +1,7 @@
-From 28b5e9ea8f4de40dd75b3c444cba6e90c752d670 Mon Sep 17 00:00:00 2001
+From 8bb50676292913f7b5deddec68fa6a60d0d03ffa Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
-Date: Sat, 16 Jul 2016 22:21:55 +0200
-Subject: [PATCH 01/10] disable CONFIG_LOCALVERSION_AUTO for consistant
+Date: Mon, 1 Aug 2016 09:10:28 +0200
+Subject: [PATCH 05/11] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -10,13 +10,13 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index d4c6629..7eaa3a0 100644
+index 651c733..ec71e8e 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -160,3 +160,4 @@ CONFIG_DETECT_HUNG_TASK=y
- CONFIG_FUNCTION_TRACER=y
- CONFIG_DEBUG_USER=y
- CONFIG_XZ_DEC=y
+@@ -167,3 +167,4 @@ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
 +CONFIG_LOCALVERSION_AUTO=n
 -- 
 2.7.4

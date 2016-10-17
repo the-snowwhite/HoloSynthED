@@ -1,0 +1,58 @@
+From 1d474667923283c89c34236a8ec19415faaad2cb Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Thu, 4 Aug 2016 19:09:30 +0200
+Subject: [PATCH 10/11] increase max framebuffersize twice above 4MB(fixes more
+ than 1024x768x8 resolution), and enable cma
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/Kconfig                   |  6 +++---
+ arch/arm/configs/socfpga_defconfig | 10 +++++++++-
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index e16a259..7d02aef 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1687,10 +1687,10 @@ source "mm/Kconfig"
+ 
+ config FORCE_MAX_ZONEORDER
+ 	int "Maximum zone order" if ARCH_SHMOBILE_LEGACY
+-	range 11 64 if ARCH_SHMOBILE_LEGACY
+-	default "12" if SOC_AM33XX
++	range 11 64 if ARCH_SHMOBILE_LEGACY || ARCH_SOCFPGA
++	range 11 64 if SOC_AM33XX || ARCH_SOCFPGA
+ 	default "9" if SA1111 || ARCH_EFM32
+-	default "11"
++	default "13"
+ 	help
+ 	  The kernel memory allocator divides physically contiguous memory
+ 	  blocks into "zones", where each zone is a power of two number of
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 1e85d8a..0c5eeda 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -187,7 +187,6 @@ CONFIG_FB_ALTERA_VIP=m
+ CONFIG_VGACON_SOFT_SCROLLBACK=y
+ CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+-CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
+ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
+ CONFIG_LOGO=y
+ CONFIG_LOGO_LINUX_MONO=y
+@@ -196,3 +195,12 @@ CONFIG_LOGO_LINUX_CLUT224=y
+ CONFIG_FONT_SUPPORT=y
+ CONFIG_FONT_8x8=y
+ CONFIG_FONT_8x16=y
++CONFIG_FORCE_MAX_ZONEORDER=13
++CONFIG_DMA_CMA=y
++CONFIG_MEMORY_ISOLATION=y
++CONFIG_CMA=y
++CONFIG_CMA_DEBUG=y
++CONFIG_CMA_SIZE_MBYTES=512
++CONFIG_CMA_SIZE_SEL_MBYTES=y
++CONFIG_CMA_ALIGNMENT=8
++CONFIG_CMA_AREAS=7
+-- 
+2.7.4
+

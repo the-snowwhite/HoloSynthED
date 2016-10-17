@@ -21,8 +21,8 @@
 #---------------------------------------------------------------------------------- #
 #-----------+++     Full Flow Control                       +++-------------------- #
 #---------------------------------------------------------------------------------- #
-#USER_NAME=machinekit;
-USER_NAME=holosynth;
+USER_NAME=machinekit;
+#USER_NAME=holosynth;
 
 #install_deps # --->- only needed on first new run of a function see function above -------#
 
@@ -30,18 +30,22 @@ USER_NAME=holosynth;
 #BUILD_UBOOT="yes";
 # # 
 #BUILD_KERNEL="yes";
-# # 
-GREATE_ROOTFS_IMAGE="yes";
+#KERNEL_2_REPO="yes"; 
+#CLEAN_KERNELREPO="yes";
+# # #
+#	#CROSS_BUILD_DTC="yes";
+#
+GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
-#GEN_ROOTFS="yes";
+#MAKE_NEW_ROOTFS="yes";
 #
 #ADD_SD_USER="yes"; 
 # 
 #INST_QT="yes";INST_QT_DEPS="yes"; 
-##	#INST_LOCALKERNEL_DEBS="yes";#MAKE_UINITRD="yes";
+##	#INST_LOCALKERNEL_DEBS="yes";#GEN_UINITRD_SCRIPT="yes";
 #
-INST_REPOKERNEL_DEBS="yes";MAKE_UINITRD="yes";
+INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 # #	ISCSI_CONV="yes";
 #
 #
@@ -77,8 +81,9 @@ PCH52_CC_FOLDER_NAME="gcc-linaro-5.2-2015.11-1-x86_64_arm-linux-gnueabihf"
 PCH52_CC_FILE="${PCH52_CC_FOLDER_NAME}.tar.xz"
 PCH52_CC_URL="http://releases.linaro.org/components/toolchain/binaries/5.2-2015.11-1/arm-linux-gnueabihf/${PCH52_CC_FILE}"
 
-#ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
-ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
+ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.7"
 
 ALT_GIT_KERNEL_BRANCH="socfpga-${ALT_GIT_KERNEL_VERSION}"
 
@@ -158,11 +163,12 @@ CC="${CC_DIR}/bin/arm-linux-gnueabihf-"
 COMP_REL=debian-${distro}_socfpga
 
 KERNEL_PARENT_DIR=${CURRENT_DIR}/arm-linux-${KERNEL_MIDDLE_NAME}-gnueabifh-kernel
-
+#KERNEL_TAG
 UBOOT_SPLFILE=${CURRENT_DIR}/uboot/${UBOOT_MAKE_CONFIG}
 
-KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
-#KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
+#KERNEL_TAG="${KERNEL_VERSION}-${KERNEL_LOCALVERSION}"
+#KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
+KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
 
 #-----------------------------------------------------------------------------------
 # local functions for external scripts
@@ -219,13 +225,52 @@ install_deps() {
 # external scripted functions
 #-----------------------------------------------------------------------------------
 
-function build_uboot {
+build_uboot() {
 	${SUB_SCRIPT_DIR}/build_uboot.sh ${CURRENT_DIR} ${MAIN_SCRIPT_DIR} ${UBOOT_VERSION} ${BOARD}  ${UBOOT_BOARD} ${UBOOT_MAKE_CONFIG} ${CC_FOLDER_NAME} ${APPLY_UBOOT_PATCH} | tee ${CURRENT_DIR}/build-uboot-log.txt
 }
 
-function build_kernel {
+build_kernel() {
 	rm -f ${KERNEL_PARENT_DIR}/*.deb
 	${SUB_SCRIPT_DIR}/build_kernel.sh ${CURRENT_DIR} ${TOOLCHAIN_DIR} ${MAIN_SCRIPT_DIR} ${CC_FOLDER_NAME} ${KERNEL_MIDDLE_NAME} ${GIT_KERNEL_BRANCH} ${KERNEL_VERSION} ${KERNEL_URL} ${KERNEL_LOCALVERSION} ${KERNEL_REV}  ${PATCH_URL} | tee ${CURRENT_DIR}/build_kernel-log.txt
+}
+
+check_dpkg () {
+	LC_ALL=C dpkg --list | awk '{print $2}' | grep "^${pkg}" >/dev/null || deb_pkgs="${deb_pkgs}${pkg} "
+}
+
+cross_build_dtc() {
+
+	unset deb_pkgs
+	pkg="bison"
+	check_dpkg
+	pkg="build-essential"
+	check_dpkg
+	pkg="flex"
+	check_dpkg
+	pkg="git-core"
+	check_dpkg
+
+	if [ "${deb_pkgs}" ] ; then
+		echo "Installing: ${deb_pkgs}"
+		sudo apt-get update
+		sudo apt-get -y install ${deb_pkgs}
+		sudo apt-get clean
+	fi
+
+	DTC_MAKEDIR=${CURRENT_DIR}/dtc/dtc
+	CC_DIR="${TOOLCHAIN_DIR}/${CC_FOLDER_NAME}"
+	CC="${CC_DIR}/bin/arm-linux-gnueabihf-"
+	export CROSS_COMPILE=${CC}
+	
+	if [ ! -d ${DTC_MAKEDIR} ]; then
+		echo "cloning dtc repo"
+		mkdir ${CURRENT_DIR}/dtc
+		cd ${CURRENT_DIR}/dtc
+		git clone git://git.kernel.org/pub/scm/utils/dtc/dtc.git -b v1.4.1
+	fi
+	cd ${DTC_MAKEDIR} 
+	make clean
+	make ARCH=arm CROSS_COMPILE=${CC} 
 }
 
 create_image() {
@@ -233,7 +278,7 @@ create_image() {
 }
 
 generate_rootfs_into_image() {
-	sh -c "${SUB_SCRIPT_DIR}/gen_rootfs-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT} ${USER_NAME}" | tee ${CURRENT_DIR}/gen_rootfs-qemu_2.5-log.txt
+	sh -c "${SUB_SCRIPT_DIR}/MAKE_NEW_ROOTFS-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT} ${USER_NAME}" | tee ${CURRENT_DIR}/MAKE_NEW_ROOTFS-qemu_2.5-log.txt
 }
 
 inst_qt_build_deps(){
@@ -592,34 +637,36 @@ echo ""
 echo "Scr_MSG: Repo content before -->"
 echo ""
 LIST1=`reprepro -b ${REPO_DIR} -C main -A armhf --list-format='''${package}\n''' list jessie`
-LIST2=`reprepro -b ${REPO_DIR} -C main -A armhf --list-format='''${package}\n''' list jessie`
 
 JESSIE_LIST1=$"${LIST1}"
 
 echo  "${JESSIE_LIST1}"
 
 echo ""
+if [[ ${CLEAN_KERNELREPO} == 'yes' ]]; then
 
-if [ ! -z "${JESSIE_LIST1}" ]; then
-	echo ""
-	echo "Scr_MSG: Will clean repo"
-	echo ""
-	reprepro -b ${REPO_DIR} -C main -A armhf remove jessie ${JESSIE_LIST1}
-else
-	echo ""
-	echo "Scr_MSG: Repo is empty"
+	if [ ! -z "${JESSIE_LIST1}" ]; then
+		echo ""
+		echo "Scr_MSG: Will clean repo"
+		echo ""
+		reprepro -b ${REPO_DIR} -C main -A armhf remove jessie ${JESSIE_LIST1}
+	else
+		echo ""
+		echo "Scr_MSG: Repo is empty"
+		echo ""
+	fi
 	echo ""
 fi
-echo ""
 
-reprepro -b ${REPO_DIR} -C main -A armhf includedeb jessie ${KERNEL_PARENT_DIR}/*.deb
-reprepro -b ${REPO_DIR} export jessie
-echo "Scr_MSG: Restarting web server"
+	reprepro -b ${REPO_DIR} -C main -A armhf includedeb jessie ${KERNEL_PARENT_DIR}/*.deb
+	reprepro -b ${REPO_DIR} export jessie
+	echo "Scr_MSG: Restarting web server"
 
-sudo systemctl restart apache2
+	sudo systemctl restart apache2
 reprepro -b ${REPO_DIR} export jessie
 reprepro -b ${REPO_DIR} -C main -A armhf list jessie
 
+LIST2=`reprepro -b ${REPO_DIR} -C main -A armhf --list-format='''${package}\n''' list jessie`
 JESSIE_LIST2=$"${LIST2}"
 echo ""
 echo "Scr_MSG: Repo content After: -->"
@@ -633,13 +680,13 @@ echo "#--------------------------- Script end ----------------------------------
 
 }
 
-gen_uinitrd(){
+gen_uinitrd_script(){
 echo ""
 echo "Scr_MSG: Repo Creating postinstall mkimage script for uInitrd"
 echo ""
 
 sudo sh -c 'cat <<"EOF" > "'${ROOTFS_MNT}'/etc/kernel/postinst.d/zzz-socfpga-mkimage"
-#!/bin/sh -e
+#!/bin/sh 
 
 version="$1"
 
@@ -676,23 +723,20 @@ sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes upgrade
 
-echo ""
-echo "# --------->       Removing qemu policy file          <--------------- ---------"
-echo ""
-if [ -f ${POLICY_FILE} ]; then
-    echo "removing ${POLICY_FILE}"
-    sudo rm -f ${POLICY_FILE}
-fi
+# echo ""
+# echo "# --------->       Removing qemu policy file          <--------------- ---------"
+# echo ""
+# if [ -f ${POLICY_FILE} ]; then
+#     echo "removing ${POLICY_FILE}"
+#     sudo rm -f ${POLICY_FILE}
+# fi
 
 echo ""
 echo "Script_MSG: Will now install kernel packages"
 echo ""
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG} linux-libc-dev > /dev/null
-# #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG}
-# #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b linux-image-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b
-# #linux-image-4.1.17-ltsi-rt17-socfpga-initrd-02566-g2fb9e5b
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG} linux-libc-dev
+ 
 set -e
-#  ##sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install hm2reg-uio-dkms
 
 cd ${CURRENT_DIR}
 sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
@@ -720,21 +764,28 @@ EOT'
 }
 
 inst_dtbstuff(){
-
-sudo cp ${DTS_DIR}/hsynth_fb.sh ${ROOTFS_MNT}/etc/init.d/
-sudo cp ${DTS_DIR}/uioreg_uio.sh ${ROOTFS_MNT}/etc/init.d/
-sudo chmod +x ${ROOTFS_MNT}/etc/init.d/hsynth_fb.sh
-sudo chmod +x ${ROOTFS_MNT}/etc/init.d/uioreg_uio.sh
-
+set -x
 sudo mkdir -p ${ROOTFS_MNT}/lib/firmware/socfpga
-sudo dtc -I dts -O dtb -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/uioreg_uio.dts
-sudo dtc -I dts -O dtb -o ${ROOTFS_MNT}/lib/firmware/socfpga/hsynth_fb.dtbo ${DTS_DIR}/hsynth_fb.dts
 
-sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
-sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/boot
-
+sudo cp ${DTS_DIR}/uioreg_uio.sh ${ROOTFS_MNT}/etc/init.d/
+sudo chmod +x ${ROOTFS_MNT}/etc/init.d/uioreg_uio.sh
 sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d uioreg_uio.sh defaults
-sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d hsynth_fb.sh defaults
+
+if [[ "${USER_NAME}" == "holosynth" ]]; then 
+	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/holosynth/uioreg_uio.dts
+#	sudo cp ${DTS_DIR}/hsynth_fb.sh ${ROOTFS_MNT}/etc/init.d/
+#	sudo chmod +x ${ROOTFS_MNT}/etc/init.d/hsynth_fb.sh
+	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
+	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/boot
+#	sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d hsynth_fb.sh defaults
+#	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/hsynth_fb.dtbo ${DTS_DIR}/hsynth_fb.dts
+
+elif [ "${USER_NAME}" == "machinekit" ]; then 
+	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/machinekit/hm2reg_uio-irq.dts
+	sudo cp /home/mib/Developer/the-snowwhite_git/mksocfpga_hm3/HW/QuartusProjects/DE0_NANO_SOC_GHRD/output_files/DE0_NANO.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
+	sudo cp /home/mib/Developer/the-snowwhite_git/mksocfpga_hm3/HW/QuartusProjects/DE0_NANO_SOC_GHRD/output_files/DE0_NANO.rbf ${ROOTFS_MNT}/boot
+fi
+sudo sh -c 'echo "KERNEL==\"uio0\",MODE=\"666\"" > '$ROOTFS_MNT'/etc/udev/rules.d/10-local.rules'
 
 }
 
@@ -761,9 +812,8 @@ if [ "${USER_NAME}" == "machinekit" ]; then
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="hm2reg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uiohm2.conf'
 elif [ "${USER_NAME}" == "holosynth" ]; then 
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
-	inst_dtbstuff
 fi
-sudo sh -c 'echo "KERNEL==\"uio0\",MODE=\"666\"" > '$ROOTFS_MNT'/etc/udev/rules.d/10-local.rules'
+inst_dtbstuff
 echo ""
 echo "# --------->       Removing qemu policy file          <--------------- ---------"
 echo ""
@@ -855,10 +905,17 @@ set -e
 
 	if [[ ${BUILD_KERNEL} == 'yes' ]]; then
 		build_kernel
+	fi
+
+	if [[ ${KERNEL_2_REPO} == 'yes' ]]; then
 		add_kernel2repo
 	fi
 
-	if [[ ${GREATE_ROOTFS_IMAGE} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
+	if [[ ${CROSS_BUILD_DTC} == 'yes' ]]; then
+		cross_build_dtc
+	fi
+
+	if [[ ${GEN_ROOTFS_IMAGE} == 'yes' ]]; then ## Create a fresh image and replace old if existing:
 		IMG_PARTS=0
 		create_image
 		VIRGIN_IMAGE="yes"
@@ -866,7 +923,7 @@ set -e
 
 	COMP_PREFIX=raw
 	
-	if [[ ${GEN_ROOTFS} == 'yes' ]]; then
+	if [[ ${MAKE_NEW_ROOTFS} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} != 'yes' ]]; then
 			echo ""
 			echo "Script_MSG: No new image generated formatting old image root partition"
@@ -932,8 +989,8 @@ set -e
 		fi
 		mount_rootfs_imagefile
 		bind_rootfs
-		if [[ ${MAKE_UINITRD} == 'yes' ]]; then
-			gen_uinitrd
+		if [[ ${GEN_UINITRD_SCRIPT} == 'yes' ]]; then
+			gen_uinitrd_script
 		fi
 		inst_kernel_from_local_deb | tee ${CURRENT_DIR}/local_kernel_install-log.txt
 		bind_unmount_rootfs_imagefile
@@ -948,8 +1005,8 @@ set -e
 			fi
 			mount_rootfs_imagefile
 			bind_rootfs
-			if [[ ${MAKE_UINITRD} == 'yes' ]]; then
-				gen_uinitrd
+			if [[ ${GEN_UINITRD_SCRIPT} == 'yes' ]]; then
+				gen_uinitrd_script
 			fi
 			inst_kernel_from_deb_repo | tee ${CURRENT_DIR}/deb_kernel_install-log.txt
 			bind_unmount_rootfs_imagefile
@@ -981,7 +1038,7 @@ set -e
 		mount_sdimagefile
 		extract_rootfs
 			
-		finalize
+		finalize | tee ${CURRENT_DIR}/finalize-log.txt
 		unmount_sdimagefile
 		
 		if [[ ${INST_UBOOT} == 'yes' ]]; then

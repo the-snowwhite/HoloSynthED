@@ -1,7 +1,7 @@
-From d171f657297f15333f2cfd392da176c42a8cbcd6 Mon Sep 17 00:00:00 2001
+From 1ae221a57a9af90abb707c9fa7aab8f647350e84 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
-Date: Sun, 17 Jul 2016 01:31:34 +0200
-Subject: [PATCH 05/10] add ext4 root fs support and autofs4 module
+Date: Mon, 17 Oct 2016 02:03:00 +0200
+Subject: [PATCH 6/6] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -9,25 +9,21 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 71daf98..d758be5 100644
+index 7d86899..8efc331 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -11,7 +11,7 @@ CONFIG_EMBEDDED=y
- CONFIG_PROFILING=y
+@@ -12,7 +12,10 @@ CONFIG_PROFILING=y
+ CONFIG_OPROFILE=y
  CONFIG_MODULES=y
  CONFIG_MODULE_UNLOAD=y
 -# CONFIG_LBDAF is not set
 +CONFIG_LBDAF=y
- # CONFIG_BLK_DEV_BSG is not set
- # CONFIG_IOSCHED_DEADLINE is not set
- # CONFIG_IOSCHED_CFQ is not set
-@@ -166,3 +166,6 @@ CONFIG_UIO_PDRV=y
- CONFIG_UIO_PDRV_GENIRQ=y
- CONFIG_CONFIGFS_FS=y
- CONFIG_OF_OVERLAY=y
 +CONFIG_EXT4_FS_POSIX_ACL=y
 +CONFIG_EXT4_FS_SECURITY=y
 +CONFIG_AUTOFS4_FS=y
+ # CONFIG_BLK_DEV_BSG is not set
+ # CONFIG_IOSCHED_DEADLINE is not set
+ # CONFIG_IOSCHED_CFQ is not set
 -- 
 2.7.4
 

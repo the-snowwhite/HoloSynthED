@@ -1,7 +1,7 @@
-From e3d376f06a662df9682496b089b5ce3f1f14c497 Mon Sep 17 00:00:00 2001
+From 28b5e9ea8f4de40dd75b3c444cba6e90c752d670 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 16 Jul 2016 22:21:55 +0200
-Subject: [PATCH 01/11] disable CONFIG_LOCALVERSION_AUTO for consistant
+Subject: [PATCH 01/10] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -22,10 +22,10 @@ index d4c6629..7eaa3a0 100644
 2.7.4
 
 
-From e83d4c8fd9383b4589e1bb972e20b55060f9ab8f Mon Sep 17 00:00:00 2001
+From bd48bddb4e66fe70725762e8d5f416dd7ed82401 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 16 Jul 2016 22:25:32 +0200
-Subject: [PATCH 02/11] enable jumboframes maxmtu=9000
+Subject: [PATCH 02/10] enable jumboframes maxmtu=9000
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -49,10 +49,10 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From f7c1c854bd33fc953e599b32594f54260f344b1a Mon Sep 17 00:00:00 2001
+From ceedfdcd10d6ed81bae83d5888252aeb4894adff Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 00:41:30 +0200
-Subject: [PATCH 03/11] add uio driver support
+Subject: [PATCH 03/10] add uio driver support
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -74,10 +74,10 @@ index 7eaa3a0..717954e 100644
 2.7.4
 
 
-From 70792bd9fc3aecb48dd02967fde57b5395a46ae4 Mon Sep 17 00:00:00 2001
+From c140e0a42d6a1376488ca1067a850a01cd3162a1 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:20:55 +0200
-Subject: [PATCH 04/11] add configfs and fpgacfg dts entities, and dynamic dts
+Subject: [PATCH 04/10] add configfs and fpgacfg dts entities, and dynamic dts
  overlay support
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -99,10 +99,10 @@ index 717954e..71daf98 100644
 2.7.4
 
 
-From 1b4106e07ea92fd41d6a63a2926c7d4b19037112 Mon Sep 17 00:00:00 2001
+From d171f657297f15333f2cfd392da176c42a8cbcd6 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:31:34 +0200
-Subject: [PATCH 05/11] add ext4 root fs support and autofs4 module
+Subject: [PATCH 05/10] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -133,10 +133,10 @@ index 71daf98..d758be5 100644
 2.7.4
 
 
-From f240f0d82a1229e694e4b33670d19316cb813cdf Mon Sep 17 00:00:00 2001
+From e45fbde2f587827f77bba20d47b90a9867e4efed Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:38:04 +0200
-Subject: [PATCH 06/11] enable initramfs
+Subject: [PATCH 06/10] enable initramfs
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -165,10 +165,10 @@ index d758be5..d6cb406 100644
 2.7.4
 
 
-From e55372d523e52fbb753697af09eb23aeebf5e96e Mon Sep 17 00:00:00 2001
+From 2c4ef634a4f9010b2fd74d005c7c669b3d38a819 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 14:10:56 +0200
-Subject: [PATCH 07/11] add .dtd files to kernel-image .deb
+Subject: [PATCH 07/10] add .dtd files to kernel-image .deb
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -203,11 +203,11 @@ index 88dbf23..67770e9 100755
 2.7.4
 
 
-From c0d59c88310aea28e8177ca3ef7d5b64555bbb9d Mon Sep 17 00:00:00 2001
+From 5ad14ed6cd6b23d40dd41f5d6d27b5f46e34e8be Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 18 Jul 2016 16:21:56 +0200
-Subject: [PATCH 08/11] add generate /boot/kver.txt containing kernelversion
- string
+Subject: [PATCH 08/10] add generate /boot/uEnv.txt containing kernel info for
+ uboot probing
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -215,59 +215,49 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 7 insertions(+)
 
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
-index 67770e9..5f2cfc5 100755
+index 67770e9..3e0abd0 100755
 --- a/scripts/package/builddeb
 +++ b/scripts/package/builddeb
-@@ -172,11 +172,17 @@ if [ "$ARCH" != "um" ]; then
- 	$MAKE headers_install KBUILD_SRC= INSTALL_HDR_PATH="$libc_headers_dir/usr"
+@@ -183,6 +183,13 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
+ else
+ 	want_initrd=No
  fi
- 
-+# create kver.txt containing current kernelversio in /boot folder (for u-boot probing)
-+cat <<EOF > "$tmpdir/boot/kver.txt"
-+${version}
++ 
++# create uEnv.txt containing current kernelversio in /boot folder (for u-boot probing)
++	cat <<EOF > "$tmpdir/boot/uEnv.txt"
++kver=${version}
++initrd_installed=$want_initrd
 +EOF
 +
- # Install the maintainer scripts
- # Note: hook scripts under /etc/kernel are also executed by official Debian
- # kernel packages, as well as kernel packages built using make-kpkg.
- # make-kpkg sets $INITRD to indicate whether an initramfs is wanted, and
- # so do we; recent versions of dracut and initramfs-tools will obey this.
-+
- debhookdir=${KDEB_HOOKDIR:-/etc/kernel}
- if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
- 	want_initrd=Yes
-@@ -197,6 +203,7 @@ export DEB_MAINT_PARAMS="\$*"
- export INITRD=$want_initrd
- 
- test -d $debhookdir/$script.d && run-parts --arg="$version" --arg="/$installed_image_path" $debhookdir/$script.d
-+
- exit 0
- EOF
- 	chmod 755 "$tmpdir/DEBIAN/$script"
+ for script in postinst postrm preinst prerm ; do
+ 	mkdir -p "$tmpdir$debhookdir/$script.d"
+ 	cat <<EOF > "$tmpdir/DEBIAN/$script"
 -- 
 2.7.4
 
 
-From f42be5de5d8650dfdba38da7a99a2432030797d2 Mon Sep 17 00:00:00 2001
+From 88ce06339fae26c776ad594310abef52ca2055f0 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 23 Jul 2016 19:52:59 +0200
-Subject: [PATCH 09/11] change uio_pdrv_genirq to module
+Subject: [PATCH 09/10] change uio_pdrv_genirq to module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
- arch/arm/configs/socfpga_defconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/configs/socfpga_defconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index d6cb406..0b1da0f 100644
+index d6cb406..49399e4 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
-@@ -162,8 +162,8 @@ CONFIG_DEBUG_USER=y
+@@ -161,9 +161,9 @@ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
  CONFIG_XZ_DEC=y
  CONFIG_LOCALVERSION_AUTO=n
- CONFIG_UIO=y
+-CONFIG_UIO=y
 -CONFIG_UIO_PDRV=y
 -CONFIG_UIO_PDRV_GENIRQ=y
++CONFIG_UIO=m
 +CONFIG_UIO_PDRV=m
 +CONFIG_UIO_PDRV_GENIRQ=m
  CONFIG_CONFIGFS_FS=y
@@ -277,46 +267,10 @@ index d6cb406..0b1da0f 100644
 2.7.4
 
 
-From 82854dc540d1f00b316e21104dbbb133b2121de7 Mon Sep 17 00:00:00 2001
-From: Michael Brown <producer@holotronic.dk>
-Date: Sun, 31 Jul 2016 16:00:33 +0200
-Subject: [PATCH 10/11] change gpio_altera to module and disable bridge_freeze
-
-Signed-off-by: Michael Brown <producer@holotronic.dk>
----
- arch/arm/configs/socfpga_defconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 0b1da0f..8f9d3bb 100644
---- a/arch/arm/configs/socfpga_defconfig
-+++ b/arch/arm/configs/socfpga_defconfig
-@@ -97,7 +97,7 @@ CONFIG_SPI_DW_MMIO=y
- CONFIG_SPI_SPIDEV=y
- CONFIG_GPIOLIB=y
- CONFIG_GPIO_SYSFS=y
--CONFIG_GPIO_ALTERA=y
-+CONFIG_GPIO_ALTERA=m
- CONFIG_GPIO_DWAPB=y
- CONFIG_GPIO_A10SYCON=y
- CONFIG_SENSORS_A10SYCON=y
-@@ -135,7 +135,7 @@ CONFIG_FPGA_MGR_SOCFPGA=y
- CONFIG_FPGA_MGR_SOCFPGA_A10=y
- CONFIG_FPGA_BRIDGE=y
- CONFIG_SOCFPGA_FPGA_BRIDGE=y
--CONFIG_ALTERA_FREEZE_BRIDGE=y
-+CONFIG_ALTERA_FREEZE_BRIDGE=n
- CONFIG_EXT2_FS=y
- CONFIG_EXT2_FS_XATTR=y
- CONFIG_EXT2_FS_POSIX_ACL=y
--- 
-2.7.4
-
-
-From 07375376a2d0d63e827c5fa8526fe17f9def8a20 Mon Sep 17 00:00:00 2001
+From 9be7c4397a4cb3933db8a46855e921b17862d41f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 00:17:44 +0200
-Subject: [PATCH 11/11] disable debug package gen
+Subject: [PATCH 10/10] disable debug package gen
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -324,7 +278,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 8f9d3bb..568bd0e 100644
+index 49399e4..950821c 100644
 --- a/arch/arm/configs/socfpga_defconfig
 +++ b/arch/arm/configs/socfpga_defconfig
 @@ -153,7 +153,7 @@ CONFIG_ROOT_NFS=y
