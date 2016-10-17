@@ -1,7 +1,7 @@
-From f063d1ecd020acd68515f83ae45edf0cc152565f Mon Sep 17 00:00:00 2001
+From 2781d6a2925720d9691748a6a34220f4b8102db0 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 16 Jul 2016 22:21:55 +0200
-Subject: [PATCH 01/10] disable CONFIG_LOCALVERSION_AUTO for consistant
+Subject: [PATCH 01/11] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -22,10 +22,10 @@ index d4c6629..7eaa3a0 100644
 2.7.4
 
 
-From 1c431a665ce69fb2bc1d2af52504c0115495b07d Mon Sep 17 00:00:00 2001
+From 8dbc63e86b0988c43f7fa67879588eeebfe54f22 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 16 Jul 2016 22:25:32 +0200
-Subject: [PATCH 02/10] enable jumboframes maxmtu=9000
+Subject: [PATCH 02/11] enable jumboframes maxmtu=9000
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -49,10 +49,10 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From 725288c98b4ee1a55d3fd7db08bdcc508c350bcf Mon Sep 17 00:00:00 2001
+From b1d50713fcbaf4e8109f18bbc1635eb4f659b722 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 00:41:30 +0200
-Subject: [PATCH 03/10] add uio driver support
+Subject: [PATCH 03/11] add uio driver support
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -74,10 +74,10 @@ index 7eaa3a0..717954e 100644
 2.7.4
 
 
-From ea6083c9f054f63f67d9150f39256a3d08d698e8 Mon Sep 17 00:00:00 2001
+From 32e8be8eccc8dbcdfad6d2492d7963a21fb771fd Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:20:55 +0200
-Subject: [PATCH 04/10] add configfs and fpgacfg dts entities, and dynamic dts
+Subject: [PATCH 04/11] add configfs and fpgacfg dts entities, and dynamic dts
  overlay support
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -99,10 +99,10 @@ index 717954e..71daf98 100644
 2.7.4
 
 
-From c6795b5ea3074df4f9caa6d183c5cdda27c6eb18 Mon Sep 17 00:00:00 2001
+From 3fcff513b086ed6f3cc12814c5e1a96b19050b12 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:31:34 +0200
-Subject: [PATCH 05/10] add ext4 root fs support and autofs4 module
+Subject: [PATCH 05/11] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -133,10 +133,10 @@ index 71daf98..d758be5 100644
 2.7.4
 
 
-From 7f7b34224fb54167b8144109c2b32e886e550bcd Mon Sep 17 00:00:00 2001
+From 35b2e694db22469ab4104b3871bce27caba1f97d Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:38:04 +0200
-Subject: [PATCH 06/10] enable initramfs
+Subject: [PATCH 06/11] enable initramfs
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -165,10 +165,10 @@ index d758be5..d6cb406 100644
 2.7.4
 
 
-From 363fae762e710ffd83ca5d5b44a43ea3454ff122 Mon Sep 17 00:00:00 2001
+From 5438e97fe0493d6c1ca52d527a15eee6d0f32c2b Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 14:10:56 +0200
-Subject: [PATCH 07/10] add .dtd files to kernel-image .deb
+Subject: [PATCH 07/11] add .dtd files to kernel-image .deb
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -203,10 +203,10 @@ index 88dbf23..67770e9 100755
 2.7.4
 
 
-From 34ee83fed489ef0fd8c2b9366e184d2b42be5608 Mon Sep 17 00:00:00 2001
+From eba4088390f713ef3f391fbb6cc5aa8c8b9b805f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 18 Jul 2016 16:21:56 +0200
-Subject: [PATCH 08/10] add generate /boot/kver.txt containing kernelversion
+Subject: [PATCH 08/11] add generate /boot/kver.txt containing kernelversion
  string
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -248,10 +248,10 @@ index 67770e9..5f2cfc5 100755
 2.7.4
 
 
-From 84b7f545ddcc9b15608ed8896623c3a10d304e08 Mon Sep 17 00:00:00 2001
+From 5d38ebd876b833cf899ef39ed9347a83c1ea83bb Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 23 Jul 2016 19:52:59 +0200
-Subject: [PATCH 09/10] change uio_pdrv_genirq to module
+Subject: [PATCH 09/11] change uio_pdrv_genirq to module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -275,10 +275,10 @@ index d6cb406..5e2de73 100644
 2.7.4
 
 
-From 980a301ad0eb97b97ec3cfc905f52d3a584593bb Mon Sep 17 00:00:00 2001
+From 75df301514393c56125f51efa9434516a628d5c4 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 31 Jul 2016 16:00:33 +0200
-Subject: [PATCH 10/10] change gpio_altera to module and disable bridge_freeze
+Subject: [PATCH 10/11] change gpio_altera to module and disable bridge_freeze
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -307,6 +307,33 @@ index 5e2de73..cbdab19 100644
  CONFIG_EXT2_FS=y
  CONFIG_EXT2_FS_XATTR=y
  CONFIG_EXT2_FS_POSIX_ACL=y
+-- 
+2.7.4
+
+
+From 728cf015c38c58466786c1bc39cd00d92c073a15 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 00:17:44 +0200
+Subject: [PATCH 11/11] disable debug package gen
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index cbdab19..03a0bdd 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -153,7 +153,7 @@ CONFIG_ROOT_NFS=y
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ISO8859_1=y
+ CONFIG_PRINTK_TIME=y
+-CONFIG_DEBUG_INFO=y
++CONFIG_DEBUG_INFO=n
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DETECT_HUNG_TASK=y
+ # CONFIG_SCHED_DEBUG is not set
 -- 
 2.7.4
 
