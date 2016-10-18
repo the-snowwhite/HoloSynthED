@@ -27,7 +27,7 @@ USER_NAME=holosynth;
 #INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
-#BUILD_UBOOT="yes";
+BUILD_UBOOT="yes";
 # #
 #BUILD_KERNEL="yes";
 #KERNEL_2_REPO="yes";
@@ -35,7 +35,7 @@ USER_NAME=holosynth;
 # # #
 #	#CROSS_BUILD_DTC="yes";
 #
-GEN_ROOTFS_IMAGE="yes";
+#GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
 #MAKE_NEW_ROOTFS="yes";
@@ -44,13 +44,13 @@ GEN_ROOTFS_IMAGE="yes";
 #
 #INST_QT="yes";INST_QT_DEPS="yes";
 #
-INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
+#INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 #
 #INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-#CREATE_BMAP="yes"; INST_UBOOT="yes";
+CREATE_BMAP="yes"; INST_UBOOT="yes";
 #
 
 
@@ -720,6 +720,7 @@ sudo cp ${DEB_DLIST1} ${ROOTFS_MNT}
 
 
 #sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/ls /home/
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/dpkg -i linux-libc-dev_4.1-ltsi-rt-0.1_armhf.deb
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/dpkg -i ${DEB_DLIST1}
 }
 
