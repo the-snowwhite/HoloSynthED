@@ -24,12 +24,12 @@
 #USER_NAME=machinekit;
 USER_NAME=holosynth;
 
-#install_deps # --->- only needed on first new run of a function see function above -------#
+INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
 #BUILD_UBOOT="yes";
 # #
-BUILD_KERNEL="yes";
+#BUILD_KERNEL="yes";
 #KERNEL_2_REPO="yes";
 #CLEAN_KERNELREPO="yes";
 # # #
@@ -43,7 +43,8 @@ BUILD_KERNEL="yes";
 #ADD_SD_USER="yes";
 #
 #INST_QT="yes";INST_QT_DEPS="yes";
-##	#INST_LOCALKERNEL_DEBS="yes";#GEN_UINITRD_SCRIPT="yes";
+#
+#INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 #
 #INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 # #	ISCSI_CONV="yes";
@@ -211,13 +212,21 @@ install_kernel_dep() {
 	sudo apt-get -y build-dep linux
 }
 
+install_rootfs_dep() {
+    sudo apt-get -y install qemu binfmt-support qemu-user-static schroot debootstrap libc6 debian-archive-keyring
+#    sudo dpkg --add-architecture armhf
+    sudo apt update
+#    sudo apt -y --force-yes upgrade
+    sudo update-binfmts --display | grep interpreter
+}
+
 install_deps() {
-	get_toolchain
-	install_uboot_dep
-	install_kernel_dep
+#	get_toolchain
+#	install_uboot_dep
+#	install_kernel_dep
 #	#sudo ${apt_cmd} install kpartx
 	install_rootfs_dep
-	sudo ${apt_cmd} install bmap-tools
+	sudo ${apt_cmd} install -y bmap-tools pbzip2 pigz
 	echo "MSG: deps installed"
 }
 
@@ -700,6 +709,11 @@ sudo chmod 755 "${ROOTFS_MNT}/etc/kernel/postinst.d/zzz-socfpga-mkimage"
 }
 
 
+inst_kernel_from_local_deb(){
+sudo cp ${KERNEL_PARENT_DIR}/*.deb ${ROOTFS_MNT}/home/${USER_NAME}
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} /home/${USER_NAME}/*.deb
+}
+
 inst_kernel_from_deb_repo(){
 
 sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-local ${ROOTFS_MNT}/etc/apt/sources.list
@@ -898,6 +912,11 @@ echo "#-------------------------------------------------------------------------
 echo "#-----------+++     Full Image building process start       +++-------------------- "
 echo "#---------------------------------------------------------------------------------- "
 set -e
+
+
+	if [[ ${INSTALL_DEPS} == 'yes' ]]; then
+		install_deps
+	fi
 
 
 	if [[ ${BUILD_UBOOT} == 'yes' ]]; then
