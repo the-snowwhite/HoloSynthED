@@ -1,4 +1,4 @@
-From 1b4e8fc0b7af7da8267da4420b52e25cc31da74b Mon Sep 17 00:00:00 2001
+From 4f906e19fbf3de594c828fdcb0011e53d7654fd9 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Wed, 29 Jun 2016 19:05:21 +0200
 Subject: [PATCH 04/12] add socfpga .dtb files to kernel-image .deb, and

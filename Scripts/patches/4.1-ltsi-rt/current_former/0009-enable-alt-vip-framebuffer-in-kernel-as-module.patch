@@ -1,4 +1,4 @@
-From 1681025cce37c8075839f495dc84bfb0ec364b2f Mon Sep 17 00:00:00 2001
+From 9c9997a6c950e9947033cd6a52a3c0c479eb513b Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 19:32:34 +0200
 Subject: [PATCH 09/12] enable alt vip framebuffer in kernel as module
