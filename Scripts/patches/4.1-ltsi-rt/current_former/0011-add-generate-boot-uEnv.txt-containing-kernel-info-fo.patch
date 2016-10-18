@@ -1,7 +1,7 @@
-From 1be61b2fce245df9eeeccda262290cee61c3a8c1 Mon Sep 17 00:00:00 2001
+From 465ab10b3909534330b2bf9855fad92b22cb5a83 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 6 Aug 2016 15:49:31 +0200
-Subject: [PATCH 11/13] add generate /boot/uEnv.txt containing kernel info for
+Subject: [PATCH 11/12] add generate /boot/uEnv.txt containing kernel info for
  uboot probing
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>

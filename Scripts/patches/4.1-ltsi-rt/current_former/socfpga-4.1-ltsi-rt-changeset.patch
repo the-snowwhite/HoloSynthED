@@ -1,4 +1,4 @@
-From 7c65e3a57bc676d35b3b1085705bbb488c7b4820 Mon Sep 17 00:00:00 2001
+From 6f7fb3ad666de732fb4435d7a22bedc077482a04 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:48:25 +0200
 Subject: [PATCH 01/12] add ext4 root fs support and autofs4 module
@@ -46,7 +46,7 @@ index 01e6811..1fb717a 100644
 2.7.4
 
 
-From dac8998b7da2480b150ee380aff5894ed4709a8a Mon Sep 17 00:00:00 2001
+From 427263237abb184420928cd962b09b73b22deded Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:52:00 +0200
 Subject: [PATCH 02/12] add uio driver support as module
@@ -74,7 +74,7 @@ index 1fb717a..b2f79d7 100644
 2.7.4
 
 
-From afe6cd1c20306e3be5687b6682aea248087fa9f3 Mon Sep 17 00:00:00 2001
+From 4b820222da7becac3dcf526fb27878921cd363ad Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:55:33 +0200
 Subject: [PATCH 03/12] add configfs and fpgacfg dts entities, and dynamic dts
@@ -102,7 +102,7 @@ index b2f79d7..651c733 100644
 2.7.4
 
 
-From 1b4e8fc0b7af7da8267da4420b52e25cc31da74b Mon Sep 17 00:00:00 2001
+From b6dd8324888d2396dc4b8a2d81b6866685cd854e Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Wed, 29 Jun 2016 19:05:21 +0200
 Subject: [PATCH 04/12] add socfpga .dtb files to kernel-image .deb, and
@@ -143,7 +143,7 @@ index 88dbf23..67770e9 100755
 2.7.4
 
 
-From 93bf75857f523c48259269e644ae1e738dee56f5 Mon Sep 17 00:00:00 2001
+From 6ffe2fd9ec9f7f1c205337f0af5969ee3b22efc7 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:10:28 +0200
 Subject: [PATCH 05/12] disable CONFIG_LOCALVERSION_AUTO for consistant
@@ -167,7 +167,7 @@ index 651c733..ec71e8e 100644
 2.7.4
 
 
-From 42751c6f01d2cca8b65cb179ae6468fb98269121 Mon Sep 17 00:00:00 2001
+From 6b79f07c11092092242790055011b5b3d4fc3b88 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:13:51 +0200
 Subject: [PATCH 06/12] enable jumboframes maxmtu=9000
@@ -194,7 +194,7 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From 2991e78edc719cda2d33ac70e2fb0995b3521fed Mon Sep 17 00:00:00 2001
+From 485c48f66b5d1132bc1f243ffb287cbc315d757e Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:11 +0200
 Subject: [PATCH 07/12] enable initramfs
@@ -226,7 +226,7 @@ index ec71e8e..8f27ae0 100644
 2.7.4
 
 
-From 53e1335af3a024a787c82f82eb84a43c75db406f Mon Sep 17 00:00:00 2001
+From bdc789c45bc1c6ca8ce268205476dd24adb7693f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:41 +0200
 Subject: [PATCH 08/12] disable debug package gen
@@ -253,7 +253,7 @@ index 8f27ae0..bbca942 100644
 2.7.4
 
 
-From 1681025cce37c8075839f495dc84bfb0ec364b2f Mon Sep 17 00:00:00 2001
+From 9c9997a6c950e9947033cd6a52a3c0c479eb513b Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 19:32:34 +0200
 Subject: [PATCH 09/12] enable alt vip framebuffer in kernel as module
@@ -293,7 +293,7 @@ index bbca942..1e85d8a 100644
 2.7.4
 
 
-From d5304d1a4dafaab8a1e947436a0d4cf396b30711 Mon Sep 17 00:00:00 2001
+From 1acc0ebfecf8ac7a613238809a451403fb703847 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Thu, 4 Aug 2016 19:09:30 +0200
 Subject: [PATCH 10/12] increase max framebuffersize twice above 4MB(fixes more
@@ -352,7 +352,7 @@ index 1e85d8a..0c5eeda 100644
 2.7.4
 
 
-From 16cdfd5623f90f2c18e3d0d06e635fa7f64e17c8 Mon Sep 17 00:00:00 2001
+From 465ab10b3909534330b2bf9855fad92b22cb5a83 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 6 Aug 2016 15:49:31 +0200
 Subject: [PATCH 11/12] add generate /boot/uEnv.txt containing kernel info for
@@ -385,7 +385,7 @@ index 67770e9..3e0abd0 100755
 2.7.4
 
 
-From 6043be8bfbf3480d28c7b0269f755399ead63bc7 Mon Sep 17 00:00:00 2001
+From e47535e80ecd201de32f9a3aa95bd77752e75ef6 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Tue, 18 Oct 2016 08:39:39 +0200
 Subject: [PATCH 12/12] added alt_vip_vfr frameebuffer to boot dtb
@@ -394,8 +394,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
  arch/arm/boot/dts/socfpga.dtsi                    | 13 +++++++++++++
  arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts |  4 ++++
- arch/arm/configs/socfpga_defconfig                |  2 +-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+ 2 files changed, 17 insertions(+)
 
 diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
 index 24b0289..6657453 100644
@@ -436,19 +435,6 @@ index 5b79c0c..abba3b5 100644
  &gpio0 {
  	status = "okay";
  };
-diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
-index 0c5eeda..db314f1 100644
---- a/arch/arm/configs/socfpga_defconfig
-+++ b/arch/arm/configs/socfpga_defconfig
-@@ -183,7 +183,7 @@ CONFIG_FB=y
- CONFIG_FB_CFB_FILLRECT=y
- CONFIG_FB_CFB_COPYAREA=y
- CONFIG_FB_CFB_IMAGEBLIT=y
--CONFIG_FB_ALTERA_VIP=m
-+CONFIG_FB_ALTERA_VIP=y
- CONFIG_VGACON_SOFT_SCROLLBACK=y
- CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
- CONFIG_FRAMEBUFFER_CONSOLE=y
 -- 
 2.7.4
 

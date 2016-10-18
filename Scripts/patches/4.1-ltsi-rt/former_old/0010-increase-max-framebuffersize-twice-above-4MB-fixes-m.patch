@@ -1,4 +1,4 @@
-From d5304d1a4dafaab8a1e947436a0d4cf396b30711 Mon Sep 17 00:00:00 2001
+From c0dcb616bf590aeb3e2d01f55f618b3141767b50 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Thu, 4 Aug 2016 19:09:30 +0200
 Subject: [PATCH 10/12] increase max framebuffersize twice above 4MB(fixes more

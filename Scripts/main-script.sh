@@ -21,36 +21,36 @@
 #---------------------------------------------------------------------------------- #
 #-----------+++     Full Flow Control                       +++-------------------- #
 #---------------------------------------------------------------------------------- #
-USER_NAME=machinekit;
-#USER_NAME=holosynth;
+#USER_NAME=machinekit;
+USER_NAME=holosynth;
 
 #install_deps # --->- only needed on first new run of a function see function above -------#
 
-# 
+#
 #BUILD_UBOOT="yes";
-# # 
-#BUILD_KERNEL="yes";
-#KERNEL_2_REPO="yes"; 
-#CLEAN_KERNELREPO="yes";
+# #
+# BUILD_KERNEL="yes";
+KERNEL_2_REPO="yes";
+CLEAN_KERNELREPO="yes";
 # # #
 #	#CROSS_BUILD_DTC="yes";
 #
-GEN_ROOTFS_IMAGE="yes";
+#GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
 #MAKE_NEW_ROOTFS="yes";
 #
-#ADD_SD_USER="yes"; 
-# 
-#INST_QT="yes";INST_QT_DEPS="yes"; 
+#ADD_SD_USER="yes";
+#
+#INST_QT="yes";INST_QT_DEPS="yes";
 ##	#INST_LOCALKERNEL_DEBS="yes";#GEN_UINITRD_SCRIPT="yes";
 #
-INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
+#INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-CREATE_BMAP="yes"; INST_UBOOT="yes";
-# 
+#CREATE_BMAP="yes"; INST_UBOOT="yes";
+#
 
 
 #------------------------------------------------------------------------------------------------------
@@ -112,7 +112,8 @@ UBOOT_MAKE_CONFIG='u-boot-with-spl.sfp'
 APPLY_UBOOT_PATCH=yes
 #APPLY_UBOOT_PATCH=""
 
-TOOLCHAIN_DIR=${CURRENT_DIR}
+TOOLCHAIN_DIR=${HOME}/bin
+#TOOLCHAIN_DIR=${CURRENT_DIR}
 
 GIT_KERNEL_BRANCH=${ALT_GIT_KERNEL_BRANCH}
 
@@ -156,14 +157,14 @@ elif [ "$BOARD" == "sockit" ]; then
    BOOT_FILES_DIR=${MAIN_SCRIPT_DIR}/../boot_files/${sockitfolder}
 fi
 
-CC_DIR="${CURRENT_DIR}/${CC_FOLDER_NAME}"
+CC_DIR="bin/${CC_FOLDER_NAME}"
 CC_FILE="${CC_FOLDER_NAME}.tar.xz"
 CC="${CC_DIR}/bin/arm-linux-gnueabihf-"
 
 COMP_REL=debian-${distro}_socfpga
 
 KERNEL_PARENT_DIR=${CURRENT_DIR}/arm-linux-${KERNEL_MIDDLE_NAME}-gnueabifh-kernel
-#KERNEL_TAG
+
 UBOOT_SPLFILE=${CURRENT_DIR}/uboot/${UBOOT_MAKE_CONFIG}
 
 #KERNEL_TAG="${KERNEL_VERSION}-${KERNEL_LOCALVERSION}"
@@ -226,7 +227,7 @@ install_deps() {
 #-----------------------------------------------------------------------------------
 
 build_uboot() {
-	${SUB_SCRIPT_DIR}/build_uboot.sh ${CURRENT_DIR} ${MAIN_SCRIPT_DIR} ${UBOOT_VERSION} ${BOARD}  ${UBOOT_BOARD} ${UBOOT_MAKE_CONFIG} ${CC_FOLDER_NAME} ${APPLY_UBOOT_PATCH} | tee ${CURRENT_DIR}/build-uboot-log.txt
+	${SUB_SCRIPT_DIR}/build_uboot.sh ${CURRENT_DIR} ${TOOLCHAIN_DIR} ${MAIN_SCRIPT_DIR} ${UBOOT_VERSION} ${BOARD}  ${UBOOT_BOARD} ${UBOOT_MAKE_CONFIG} ${CC_FOLDER_NAME} ${APPLY_UBOOT_PATCH} | tee ${CURRENT_DIR}/build-uboot-log.txt
 }
 
 build_kernel() {
@@ -261,16 +262,16 @@ cross_build_dtc() {
 	CC_DIR="${TOOLCHAIN_DIR}/${CC_FOLDER_NAME}"
 	CC="${CC_DIR}/bin/arm-linux-gnueabihf-"
 	export CROSS_COMPILE=${CC}
-	
+
 	if [ ! -d ${DTC_MAKEDIR} ]; then
 		echo "cloning dtc repo"
 		mkdir ${CURRENT_DIR}/dtc
 		cd ${CURRENT_DIR}/dtc
 		git clone git://git.kernel.org/pub/scm/utils/dtc/dtc.git -b v1.4.1
 	fi
-	cd ${DTC_MAKEDIR} 
+	cd ${DTC_MAKEDIR}
 	make clean
-	make ARCH=arm CROSS_COMPILE=${CC} 
+	make ARCH=arm CROSS_COMPILE=${CC}
 }
 
 create_image() {
@@ -313,7 +314,7 @@ qt_build(){
 echo ""
 echo "Script_MSG: Running qt_build.sh script"
 echo ""
-sh -c "${SUB_SCRIPT_DIR}/build_qt.sh ${CURRENT_DIR}" | tee ${CURRENT_DIR}/build_qt-log.txt 
+sh -c "${SUB_SCRIPT_DIR}/build_qt.sh ${CURRENT_DIR}" | tee ${CURRENT_DIR}/build_qt-log.txt
 }
 
 #-----------------------------------------------------------------------------------
@@ -390,7 +391,7 @@ bind_rootfs(){
 	echo "#                                                                                      #"
 	echo "#--------------------------------------------------------------------------------------#"
 }
- 
+
 bind_unmount_rootfs_imagefile(){
 	cd ${CURRENT_DIR}
 	CDR=`eval pwd`
@@ -608,7 +609,7 @@ sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes upgrade
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install apt-transport-https
 
-if [[ "${USER_NAME}" == "machinekit" ]]; then 
+if [[ "${USER_NAME}" == "machinekit" ]]; then
 	add_mk_repo
 fi
 
@@ -686,13 +687,13 @@ echo "Scr_MSG: Repo Creating postinstall mkimage script for uInitrd"
 echo ""
 
 sudo sh -c 'cat <<"EOF" > "'${ROOTFS_MNT}'/etc/kernel/postinst.d/zzz-socfpga-mkimage"
-#!/bin/sh 
+#!/bin/sh
 
 version="$1"
 
 echo "Installing new uInitrd to SD"
 
-mkimage -A arm -O linux -T ramdisk -a 0x0 -e 0x0 -n /boot/initrd.img-"${version}" -d /boot/initrd.img-"${version}" /boot/uInitrd-"${version}" 
+mkimage -A arm -O linux -T ramdisk -a 0x0 -e 0x0 -n /boot/initrd.img-"${version}" -d /boot/initrd.img-"${version}" /boot/uInitrd-"${version}"
 
 EOF'
 sudo chmod 755 "${ROOTFS_MNT}/etc/kernel/postinst.d/zzz-socfpga-mkimage"
@@ -735,7 +736,7 @@ echo ""
 echo "Script_MSG: Will now install kernel packages"
 echo ""
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y --force-yes install linux-headers-${KERNEL_TAG} linux-image-${KERNEL_TAG} linux-libc-dev
- 
+
 set -e
 
 cd ${CURRENT_DIR}
@@ -771,7 +772,7 @@ sudo cp ${DTS_DIR}/uioreg_uio.sh ${ROOTFS_MNT}/etc/init.d/
 sudo chmod +x ${ROOTFS_MNT}/etc/init.d/uioreg_uio.sh
 sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d uioreg_uio.sh defaults
 
-if [[ "${USER_NAME}" == "holosynth" ]]; then 
+if [[ "${USER_NAME}" == "holosynth" ]]; then
 	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/holosynth/uioreg_uio.dts
 #	sudo cp ${DTS_DIR}/hsynth_fb.sh ${ROOTFS_MNT}/etc/init.d/
 #	sudo chmod +x ${ROOTFS_MNT}/etc/init.d/hsynth_fb.sh
@@ -780,7 +781,7 @@ if [[ "${USER_NAME}" == "holosynth" ]]; then
 #	sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d hsynth_fb.sh defaults
 #	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/hsynth_fb.dtbo ${DTS_DIR}/hsynth_fb.dts
 
-elif [ "${USER_NAME}" == "machinekit" ]; then 
+elif [ "${USER_NAME}" == "machinekit" ]; then
 	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/machinekit/hm2reg_uio-irq.dts
 	sudo cp /home/mib/Developer/the-snowwhite_git/mksocfpga_hm3/HW/QuartusProjects/DE0_NANO_SOC_GHRD/output_files/DE0_NANO.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
 	sudo cp /home/mib/Developer/the-snowwhite_git/mksocfpga_hm3/HW/QuartusProjects/DE0_NANO_SOC_GHRD/output_files/DE0_NANO.rbf ${ROOTFS_MNT}/boot
@@ -808,9 +809,9 @@ gen_hostname
 echo ""
 echo "Script_MSG: Enabling uio driver and fixing user permissions"
 echo ""
-if [ "${USER_NAME}" == "machinekit" ]; then 
+if [ "${USER_NAME}" == "machinekit" ]; then
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="hm2reg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uiohm2.conf'
-elif [ "${USER_NAME}" == "holosynth" ]; then 
+elif [ "${USER_NAME}" == "holosynth" ]; then
 	sudo sh -c 'echo options uio_pdrv_genirq of_id="uioreg_io,generic-uio,ui_pdrv" > '$ROOTFS_MNT'/etc/modprobe.d/uioreg.conf'
 fi
 inst_dtbstuff
@@ -871,7 +872,7 @@ format_rootfs(){
 
 	mkfs_partition="${media_prefix}${media_rootfs_partition}"
 	mkfs_label="-L ${ROOTFS_LABEL}"
-	
+
 	sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_options} ${ROOTFS_IMG} ${mkfs_label}"
 
 #	sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_partition} ${mkfs_label}"
@@ -922,7 +923,7 @@ set -e
 	fi
 
 	COMP_PREFIX=raw
-	
+
 	if [[ ${MAKE_NEW_ROOTFS} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} != 'yes' ]]; then
 			echo ""
@@ -938,7 +939,7 @@ set -e
 		VIRGIN_IMAGE=""
 	fi
 
-	COMP_PREFIX=final_${USER_NAME}	
+	COMP_PREFIX=final_${USER_NAME}
 
 	if [[ ${ADD_SD_USER} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
@@ -951,12 +952,12 @@ set -e
 		initial_rootfs_user_setup_sh | tee ${CURRENT_DIR}/usr_setup-log.txt # --> creates custom user setup and archive of final rootfs ---#
 		bind_unmount_rootfs_imagefile
 		COMP_PREFIX=final_${USER_NAME}
-		
+
 		compress_prefix_rootfs
 	fi
-	
+
 	if [[ ${INST_QT} == 'yes' ]]; then
-		if [[ "${USER_NAME}" == "holosynth" ]]; then 
+		if [[ "${USER_NAME}" == "holosynth" ]]; then
 			if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
 				COMP_PREFIX=final_${USER_NAME}
 				inst_comp_prefis_rootfs
@@ -967,21 +968,21 @@ set -e
 				bind_rootfs
 				inst_qt_build_deps | tee ${CURRENT_DIR}/inst_qt_build_deps-log.txt
 				bind_unmount_rootfs_imagefile
-			fi	
+			fi
  			qt_build | tee ${CURRENT_DIR}/qt_build-log.txt
- 			
+
 			cp ${CURRENT_DIR}/rootfs.img ${CURRENT_DIR}/rootfs-qt-4.1.img
 			COMP_PREFIX=final_${USER_NAME}_qt
 			compress_prefix_rootfs
 		fi
 	fi
-	
+
 	if [ "${USER_NAME}" == "machinekit" ]; then
 		COMP_PREFIX=final_${USER_NAME}
 	elif  [ "${USER_NAME}" == "holosynth" ]; then
 		COMP_PREFIX=final_${USER_NAME}_qt
 	fi
-	
+
 	if [[ ${INST_LOCALKERNEL_DEBS} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
 			inst_comp_prefis_rootfs
@@ -1021,15 +1022,15 @@ set -e
 	elif  [ "${USER_NAME}" == "holosynth" ]; then
 		COMP_PREFIX=final_${USER_NAME}_qt-with-kernel
 	fi
-	
+
 	if [ ! -z "${CUSTOM_PREFIX}" ]; then
 		COMP_PREFIX=${CUSTOM_PREFIX}
 	fi
-	
+
 	if [[ ${CREATE_BMAP} == 'yes' ]]; then ## replace old image with a fresh:
 		IMG_PARTS=2
 		create_image
-		if [[ "${USER_NAME}" == "machinekit" ]]; then 
+		if [[ "${USER_NAME}" == "machinekit" ]]; then
 			hostname="mksocfpga3"
 		elif [[ "${USER_NAME}" == "holosynth" ]]; then
 			hostname="holosynthv"
@@ -1037,10 +1038,10 @@ set -e
 
 		mount_sdimagefile
 		extract_rootfs
-			
+
 		finalize | tee ${CURRENT_DIR}/finalize-log.txt
 		unmount_sdimagefile
-		
+
 		if [[ ${INST_UBOOT} == 'yes' ]]; then
 			echo "NOTE:  Will now install u-boot --> onto sd-card-image:"
 			echo "--> ${SD_IMG_FILE}"

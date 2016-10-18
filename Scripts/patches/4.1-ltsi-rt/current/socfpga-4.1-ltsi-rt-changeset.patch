@@ -1,7 +1,7 @@
-From ba5c04106f23b0129d63eb125e2320b1fa3e6191 Mon Sep 17 00:00:00 2001
+From 7c65e3a57bc676d35b3b1085705bbb488c7b4820 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:48:25 +0200
-Subject: [PATCH 01/11] add ext4 root fs support and autofs4 module
+Subject: [PATCH 01/12] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -46,10 +46,10 @@ index 01e6811..1fb717a 100644
 2.7.4
 
 
-From a39d9c39ecaaf88a49af32f5149d9fb73296e5c1 Mon Sep 17 00:00:00 2001
+From dac8998b7da2480b150ee380aff5894ed4709a8a Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:52:00 +0200
-Subject: [PATCH 02/11] add uio driver support as module
+Subject: [PATCH 02/12] add uio driver support as module
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -74,10 +74,10 @@ index 1fb717a..b2f79d7 100644
 2.7.4
 
 
-From 733a3b3fc2cfe7a4bc1f13c2f19c5ce7196956ea Mon Sep 17 00:00:00 2001
+From afe6cd1c20306e3be5687b6682aea248087fa9f3 Mon Sep 17 00:00:00 2001
 From: the-snowwhite <producer@holotronic.dk>
 Date: Sun, 26 Jun 2016 11:55:33 +0200
-Subject: [PATCH 03/11] add configfs and fpgacfg dts entities, and dynamic dts
+Subject: [PATCH 03/12] add configfs and fpgacfg dts entities, and dynamic dts
  overlay support options
 
 Signed-off-by: Michael Brown <mib@localhost.localdomain>
@@ -102,10 +102,10 @@ index b2f79d7..651c733 100644
 2.7.4
 
 
-From 6362363411275e27e52dd32ca11a6e721401088f Mon Sep 17 00:00:00 2001
+From 1b4e8fc0b7af7da8267da4420b52e25cc31da74b Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Wed, 29 Jun 2016 19:05:21 +0200
-Subject: [PATCH 04/11] add socfpga .dtb files to kernel-image .deb, and
+Subject: [PATCH 04/12] add socfpga .dtb files to kernel-image .deb, and
  install in folder /boot/dtb
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -143,10 +143,10 @@ index 88dbf23..67770e9 100755
 2.7.4
 
 
-From 8bb50676292913f7b5deddec68fa6a60d0d03ffa Mon Sep 17 00:00:00 2001
+From 93bf75857f523c48259269e644ae1e738dee56f5 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:10:28 +0200
-Subject: [PATCH 05/11] disable CONFIG_LOCALVERSION_AUTO for consistant
+Subject: [PATCH 05/12] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -167,10 +167,10 @@ index 651c733..ec71e8e 100644
 2.7.4
 
 
-From 604e7d15c88c8d552bfd5be7bb3b8fdc5300cf0e Mon Sep 17 00:00:00 2001
+From 42751c6f01d2cca8b65cb179ae6468fb98269121 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:13:51 +0200
-Subject: [PATCH 06/11] enable jumboframes maxmtu=9000
+Subject: [PATCH 06/12] enable jumboframes maxmtu=9000
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -194,10 +194,10 @@ index 555e9ca..5b79c0c 100644
 2.7.4
 
 
-From a95c830dfbcbf277a4c04f2dea2d8c7022e499e0 Mon Sep 17 00:00:00 2001
+From 2991e78edc719cda2d33ac70e2fb0995b3521fed Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:11 +0200
-Subject: [PATCH 07/11] enable initramfs
+Subject: [PATCH 07/12] enable initramfs
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -226,10 +226,10 @@ index ec71e8e..8f27ae0 100644
 2.7.4
 
 
-From 0cdb0b82b32bb2740742cc4248d86cde7daa1070 Mon Sep 17 00:00:00 2001
+From 53e1335af3a024a787c82f82eb84a43c75db406f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 09:18:41 +0200
-Subject: [PATCH 08/11] disable debug package gen
+Subject: [PATCH 08/12] disable debug package gen
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -253,10 +253,10 @@ index 8f27ae0..bbca942 100644
 2.7.4
 
 
-From 8149888b039000c52a37b8a7f27d3a3c36c910e4 Mon Sep 17 00:00:00 2001
+From 1681025cce37c8075839f495dc84bfb0ec364b2f Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 1 Aug 2016 19:32:34 +0200
-Subject: [PATCH 09/11] enable alt vip framebuffer in kernel as module
+Subject: [PATCH 09/12] enable alt vip framebuffer in kernel as module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
@@ -293,10 +293,10 @@ index bbca942..1e85d8a 100644
 2.7.4
 
 
-From 1d474667923283c89c34236a8ec19415faaad2cb Mon Sep 17 00:00:00 2001
+From d5304d1a4dafaab8a1e947436a0d4cf396b30711 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Thu, 4 Aug 2016 19:09:30 +0200
-Subject: [PATCH 10/11] increase max framebuffersize twice above 4MB(fixes more
+Subject: [PATCH 10/12] increase max framebuffersize twice above 4MB(fixes more
  than 1024x768x8 resolution), and enable cma
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -352,10 +352,10 @@ index 1e85d8a..0c5eeda 100644
 2.7.4
 
 
-From 170c26fb9649b75423de9ff03f56ca90f1152081 Mon Sep 17 00:00:00 2001
+From 16cdfd5623f90f2c18e3d0d06e635fa7f64e17c8 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 6 Aug 2016 15:49:31 +0200
-Subject: [PATCH 11/11] add generate /boot/uEnv.txt containing kernel info for
+Subject: [PATCH 11/12] add generate /boot/uEnv.txt containing kernel info for
  uboot probing
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -381,6 +381,74 @@ index 67770e9..3e0abd0 100755
  for script in postinst postrm preinst prerm ; do
  	mkdir -p "$tmpdir$debhookdir/$script.d"
  	cat <<EOF > "$tmpdir/DEBIAN/$script"
+-- 
+2.7.4
+
+
+From 6043be8bfbf3480d28c7b0269f755399ead63bc7 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Tue, 18 Oct 2016 08:39:39 +0200
+Subject: [PATCH 12/12] added alt_vip_vfr frameebuffer to boot dtb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga.dtsi                    | 13 +++++++++++++
+ arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts |  4 ++++
+ arch/arm/configs/socfpga_defconfig                |  2 +-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
+index 24b0289..6657453 100644
+--- a/arch/arm/boot/dts/socfpga.dtsi
++++ b/arch/arm/boot/dts/socfpga.dtsi
+@@ -552,6 +552,19 @@
+ 			status = "disabled";
+ 		};
+ 
++		alt_vip_vfr_vga: vip@0xff200100 {
++			compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
++			reg = <0xff200100 0x0080>;
++			clocks = <0 0 &osc1>;
++			max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
++			max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
++			bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
++			colors-per-beat = <4>;	/* NUMBER_OF_CHANNELS_IN_PARALLEL type NUMBER */
++			beats-per-pixel = <1>;	/* NUMBER_OF_CHANNELS_IN_SEQUENCE type NUMBER */
++			mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
++			status = "disabled";
++		}; //end vip@0xff200100(alt_vip_vfr_vga)
++
+ 		i2c0: i2c@ffc04000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+index 5b79c0c..abba3b5 100644
+--- a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
++++ b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+@@ -72,6 +72,10 @@
+ 	max-frame-size = <9000>;
+ };
+ 
++&alt_vip_vfr_vga {
++	status = "okay";
++};
++
+ &gpio0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 0c5eeda..db314f1 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -183,7 +183,7 @@ CONFIG_FB=y
+ CONFIG_FB_CFB_FILLRECT=y
+ CONFIG_FB_CFB_COPYAREA=y
+ CONFIG_FB_CFB_IMAGEBLIT=y
+-CONFIG_FB_ALTERA_VIP=m
++CONFIG_FB_ALTERA_VIP=y
+ CONFIG_VGACON_SOFT_SCROLLBACK=y
+ CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
+ CONFIG_FRAMEBUFFER_CONSOLE=y
 -- 
 2.7.4
 

@@ -1,0 +1,67 @@
+From 6043be8bfbf3480d28c7b0269f755399ead63bc7 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Tue, 18 Oct 2016 08:39:39 +0200
+Subject: [PATCH 12/12] added alt_vip_vfr frameebuffer to boot dtb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga.dtsi                    | 13 +++++++++++++
+ arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts |  4 ++++
+ arch/arm/configs/socfpga_defconfig                |  2 +-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
+index 24b0289..6657453 100644
+--- a/arch/arm/boot/dts/socfpga.dtsi
++++ b/arch/arm/boot/dts/socfpga.dtsi
+@@ -552,6 +552,19 @@
+ 			status = "disabled";
+ 		};
+ 
++		alt_vip_vfr_vga: vip@0xff200100 {
++			compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
++			reg = <0xff200100 0x0080>;
++			clocks = <0 0 &osc1>;
++			max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
++			max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
++			bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
++			colors-per-beat = <4>;	/* NUMBER_OF_CHANNELS_IN_PARALLEL type NUMBER */
++			beats-per-pixel = <1>;	/* NUMBER_OF_CHANNELS_IN_SEQUENCE type NUMBER */
++			mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
++			status = "disabled";
++		}; //end vip@0xff200100(alt_vip_vfr_vga)
++
+ 		i2c0: i2c@ffc04000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+index 5b79c0c..abba3b5 100644
+--- a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
++++ b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+@@ -72,6 +72,10 @@
+ 	max-frame-size = <9000>;
+ };
+ 
++&alt_vip_vfr_vga {
++	status = "okay";
++};
++
+ &gpio0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 0c5eeda..db314f1 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -183,7 +183,7 @@ CONFIG_FB=y
+ CONFIG_FB_CFB_FILLRECT=y
+ CONFIG_FB_CFB_COPYAREA=y
+ CONFIG_FB_CFB_IMAGEBLIT=y
+-CONFIG_FB_ALTERA_VIP=m
++CONFIG_FB_ALTERA_VIP=y
+ CONFIG_VGACON_SOFT_SCROLLBACK=y
+ CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+-- 
+2.7.4
+
