@@ -21,13 +21,13 @@
 #---------------------------------------------------------------------------------- #
 #-----------+++     Full Flow Control                       +++-------------------- #
 #---------------------------------------------------------------------------------- #
-#USER_NAME=machinekit;
-USER_NAME=holosynth;
+USER_NAME=machinekit;
+#USER_NAME=holosynth;
 
 #INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
-BUILD_UBOOT="yes";
+#BUILD_UBOOT="yes";
 # #
 #BUILD_KERNEL="yes";
 #KERNEL_2_REPO="yes";
@@ -35,10 +35,10 @@ BUILD_UBOOT="yes";
 # # #
 #	#CROSS_BUILD_DTC="yes";
 #
-#GEN_ROOTFS_IMAGE="yes";
+GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
-#MAKE_NEW_ROOTFS="yes";
+MAKE_NEW_ROOTFS="yes";
 #
 #ADD_SD_USER="yes";
 #
@@ -50,7 +50,7 @@ BUILD_UBOOT="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-CREATE_BMAP="yes"; INST_UBOOT="yes";
+#CREATE_BMAP="yes"; INST_UBOOT="yes";
 #
 
 
@@ -103,8 +103,8 @@ distro=jessie
 ## 2 part Expandable image
 IMG_ROOT_PART=p2
 
-BOARD=de0-nano-soc
-#BOARD=de1-soc
+#BOARD=de0-nano-soc
+BOARD=de1-soc
 #BOARD=sockit
 
 UBOOT_VERSION="v2016.07"
@@ -288,7 +288,7 @@ create_image() {
 }
 
 generate_rootfs_into_image() {
-	sh -c "${SUB_SCRIPT_DIR}/MAKE_NEW_ROOTFS-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT} ${USER_NAME}" | tee ${CURRENT_DIR}/MAKE_NEW_ROOTFS-qemu_2.5-log.txt
+	sh -c "${SUB_SCRIPT_DIR}/gen_rootfs-qemu_2.5.sh ${CURRENT_DIR} ${ROOTFS_IMG} ${distro} ${ROOTFS_MNT} ${USER_NAME}" | tee ${CURRENT_DIR}/gen_rootfs-qemu_2.5-log.txt
 }
 
 inst_qt_build_deps(){
