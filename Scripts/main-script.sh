@@ -24,7 +24,7 @@
 #USER_NAME=machinekit;
 USER_NAME=holosynth;
 
-INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
+#INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
 #BUILD_UBOOT="yes";
@@ -35,7 +35,7 @@ INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see funct
 # # #
 #	#CROSS_BUILD_DTC="yes";
 #
-#GEN_ROOTFS_IMAGE="yes";
+GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
 #MAKE_NEW_ROOTFS="yes";
@@ -44,7 +44,7 @@ INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see funct
 #
 #INST_QT="yes";INST_QT_DEPS="yes";
 #
-#INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
+INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 #
 #INST_REPOKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 # #	ISCSI_CONV="yes";
@@ -708,10 +708,19 @@ EOF'
 sudo chmod 755 "${ROOTFS_MNT}/etc/kernel/postinst.d/zzz-socfpga-mkimage"
 }
 
-
 inst_kernel_from_local_deb(){
-sudo cp ${KERNEL_PARENT_DIR}/*.deb ${ROOTFS_MNT}/home/${USER_NAME}
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} /home/${USER_NAME}/*.deb
+cd ${KERNEL_PARENT_DIR}
+
+DLIST1=`ls *.deb`
+DEB_DLIST1=$"${DLIST1}"
+echo "Will copy following files to root_fs image"
+echo  "${DEB_DLIST1}"
+
+sudo cp ${DEB_DLIST1} ${ROOTFS_MNT}
+
+
+#sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/ls /home/
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/dpkg -i ${DEB_DLIST1}
 }
 
 inst_kernel_from_deb_repo(){
