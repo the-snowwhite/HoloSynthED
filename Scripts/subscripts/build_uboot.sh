@@ -7,15 +7,14 @@
 #------------------------------------------------------------------------------------------------------
 CURRENT_DIR=`pwd`
 WORK_DIR=${1}
-
-MAIN_SCRIPT_ROOT_DIR=${2}
-UBOOT_VERSION=${3}
-BOARD=${4}
-UBOOT_BOARD=${5}
-MAKE_CONFIG=${6}
-
-CC_FOLDER_NAME=${7}
-APPLY_PATCH=${8}
+TOOLCHAIN_DIR=${2}
+MAIN_SCRIPT_ROOT_DIR=${3}
+UBOOT_VERSION=${4}
+BOARD=${5}
+UBOOT_BOARD=${6}
+MAKE_CONFIG=${7}
+CC_FOLDER_NAME=${8}
+APPLY_PATCH=${9}
 
 #UBOOT_VERSION='v2015.10'
 #UBOOT_VERSION='v2016.01'
@@ -37,7 +36,7 @@ UBOOT_DIR=${WORK_DIR}/uboot
 
 #--------- Toolchain  -------------------------------------------------#
 
-CC_DIR="${WORK_DIR}/${CC_FOLDER_NAME}"
+CC_DIR="${TOOLCHAIN_DIR}/${CC_FOLDER_NAME}"
 
 CC="${CC_DIR}/bin/arm-linux-gnueabihf-"
 
@@ -51,7 +50,7 @@ patch_uboot() {
 if [[ ${APPLY_PATCH} == 'yes' ]]; then
 	echo "MGG: Applying u-boot patch ${PATCH_FILE}"
 	cd $UBOOT_DIR
-	git am --signoff <  $MAIN_SCRIPT_ROOT_DIR/$PATCH_FILE
+	git am --signoff <  ${MAIN_SCRIPT_ROOT_DIR}/${PATCH_FILE}
 else
 	echo "MSG: No u-boot patch applied"
 fi
