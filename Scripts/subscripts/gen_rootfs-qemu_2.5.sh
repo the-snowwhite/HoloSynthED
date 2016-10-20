@@ -84,15 +84,15 @@ EOT'
 gen_final_sources_list() {
 sudo sh -c 'cat <<EOT > '$ROOTFS_DIR'/etc/apt/sources.list-final
 #------------------------------------------------------------------------------#
-#                   OFFICIAL DEBIAN REPOS                    
+#                   OFFICIAL DEBIAN REPOS
 #------------------------------------------------------------------------------#
 
 ###### Debian Main Repos
-deb '${final_repo}' '$distro' main contrib non-free 
-deb-src '${final_repo}' '$distro' main 
+deb '${final_repo}' '$distro' main contrib non-free
+deb-src '${final_repo}' '$distro' main
 
 ###### Debian Update Repos
-deb http://security.debian.org/ '$distro'/updates main contrib non-free 
+deb http://security.debian.org/ '$distro'/updates main contrib non-free
 
 EOT'
 
@@ -102,16 +102,16 @@ gen_local_sources_list() {
 
 sudo sh -c 'cat <<EOT > '$ROOTFS_MNT'/etc/apt/sources.list-local
 #------------------------------------------------------------------------------#
-#                   OFFICIAL DEBIAN REPOS                    
+#                   OFFICIAL DEBIAN REPOS
 #------------------------------------------------------------------------------#
 
 
-##### Local Debian mirror 
-deb '${local_repo}' '$distro' main contrib non-free 
-deb-src '${local_repo}' '$distro' main 
+##### Local Debian mirror
+deb '${local_repo}' '$distro' main contrib non-free
+deb-src '${local_repo}' '$distro' main
 
 ###### Debian Update Repos
-deb http://security.debian.org/ '$distro'/updates main contrib non-free 
+deb http://security.debian.org/ '$distro'/updates main contrib non-free
 
 EOT'
 echo ""
@@ -748,9 +748,10 @@ set -e
 
 gen_install_in-img
 set +e
-echo "Scr_MSG: Killing all processes in ---> ${ROOTFS_MNT}"
+#echo "Scr_MSG: Killing all processes in ---> ${ROOTFS_MNT}"
 PREFIX=${ROOTFS_MNT}
-kill_ch_proc
+#kill_ch_proc
+#sudo umount -R ${ROOTFS_MNT}
 set -e
 echo "#---------------------------------------------------------------------------------- "
 echo "#--------------------+++       gen-rootfs.sh End     +++--------------------------- "

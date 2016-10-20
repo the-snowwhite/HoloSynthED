@@ -17,12 +17,37 @@
 
 # 1.initial source: make minimal rootfs on amd64 Debian Jessie, according to "How to create bare minimum Debian Wheezy rootfs from scratch"
 # http://olimex.wordpress.com/2014/07/21/how-to-create-bare-minimum-debian-wheezy-rootfs-from-scratch/
+#
+#------------------------------------------------------------------------------------------------------
+# Variables Custom settings
+#------------------------------------------------------------------------------------------------------
+
+#distro=sid
+distro=jessie
+#distro=stretch
+
+## 2 part Expandable image
+IMG_ROOT_PART=p2
+
+BOARD=de0-nano-soc
+#BOARD=de1-soc
+#BOARD=sockit
+
+UBOOT_VERSION="v2016.07"
+#UBOOT_VERSION="v2016.05"
+UBOOT_MAKE_CONFIG='u-boot-with-spl.sfp'
+APPLY_UBOOT_PATCH=yes
+#APPLY_UBOOT_PATCH=""
+USER_NAME=machinekit;
+#USER_NAME=holosynth;
+
+ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.7"
 #------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------- #
 #-----------+++     Full Flow Control                       +++-------------------- #
 #---------------------------------------------------------------------------------- #
-USER_NAME=machinekit;
-#USER_NAME=holosynth;
 
 #INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
@@ -35,10 +60,10 @@ USER_NAME=machinekit;
 # # #
 #	#CROSS_BUILD_DTC="yes";
 #
-GEN_ROOTFS_IMAGE="yes";
+#GEN_ROOTFS_IMAGE="yes";
 #CUSTOM_PREFIX="3.10-updated"
 # #
-MAKE_NEW_ROOTFS="yes";
+#MAKE_NEW_ROOTFS="yes";
 #
 #ADD_SD_USER="yes";
 #
@@ -50,7 +75,7 @@ MAKE_NEW_ROOTFS="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-#CREATE_BMAP="yes"; INST_UBOOT="yes";
+CREATE_BMAP="yes"; FINALIZE="yes"; INST_UBOOT="yes";
 #
 
 
@@ -60,6 +85,8 @@ MAKE_NEW_ROOTFS="yes";
 apt_cmd="apt-get"
 #------------------------------------------------------------------------------------------------------
 WORK_DIR=${1}
+
+REPO_DIR="/var/www/repos/apt/debian"
 
 MAIN_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SUB_SCRIPT_DIR=${MAIN_SCRIPT_DIR}/subscripts
@@ -82,36 +109,12 @@ PCH52_CC_FOLDER_NAME="gcc-linaro-5.2-2015.11-1-x86_64_arm-linux-gnueabihf"
 PCH52_CC_FILE="${PCH52_CC_FOLDER_NAME}.tar.xz"
 PCH52_CC_URL="http://releases.linaro.org/components/toolchain/binaries/5.2-2015.11-1/arm-linux-gnueabihf/${PCH52_CC_FILE}"
 
-ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
-#ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
-#ALT_GIT_KERNEL_VERSION="4.7"
-
 ALT_GIT_KERNEL_BRANCH="socfpga-${ALT_GIT_KERNEL_VERSION}"
 
 QTDIR=/home/mib/qt-src/qt-everywhere-opensource-src-5.4.1
 
 POLICY_FILE=${ROOTFS_MNT}/usr/sbin/policy-rc.d
 
-#------------------------------------------------------------------------------------------------------
-# Variables Custom settings
-#------------------------------------------------------------------------------------------------------
-
-#distro=sid
-distro=jessie
-#distro=stretch
-
-## 2 part Expandable image
-IMG_ROOT_PART=p2
-
-#BOARD=de0-nano-soc
-BOARD=de1-soc
-#BOARD=sockit
-
-UBOOT_VERSION="v2016.07"
-#UBOOT_VERSION="v2016.05"
-UBOOT_MAKE_CONFIG='u-boot-with-spl.sfp'
-APPLY_UBOOT_PATCH=yes
-#APPLY_UBOOT_PATCH=""
 
 TOOLCHAIN_DIR=${HOME}/bin
 #TOOLCHAIN_DIR=${CURRENT_DIR}
@@ -133,8 +136,6 @@ CC_URL=$PCH52_CC_URL
 
 EnableSystemdNetworkedLink='/etc/systemd/system/multi-user.target.wants/systemd-networkd.service'
 EnableSystemdResolvedLink='/etc/systemd/system/multi-user.target.wants/systemd-resolved.service'
-
-REPO_DIR="/var/www/repos/apt/debian"
 
 #------------------------------------------------------------------------------------------------------
 # Variables Postrequsites
@@ -466,7 +467,7 @@ fi
 add_mk_repo(){
 echo "ECHO: adding mk sources.list"
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv 43DDF224
-echo "deb http://deb.machinekit.io/debian jessie main" > ${ROOTFS_MNT}/etc/apt/sources.list.d/'${USER_NAME}'.list
+sudo sh -c 'echo "deb http://deb.machinekit.io/debian jessie main" > '${ROOTFS_MNT}'/etc/apt/sources.list.d/'${USER_NAME}'.list'
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/'${apt_cmd}' -y update
 }
 
@@ -496,7 +497,7 @@ echo "'${USER_NAME}':'${USER_NAME}'" | chpasswd
 adduser '${USER_NAME}' sudo
 chsh -s /bin/bash '${USER_NAME}'
 
-echo "ECHO: ""User Added"
+echo "ECHO: ""User '${USER_NAME}' Added"
 
 echo "ECHO: ""Will now add user to groups"
 usermod -a -G '${DEFGROUPS}' '${USER_NAME}'
@@ -1068,7 +1069,9 @@ set -e
 		mount_sdimagefile
 		extract_rootfs
 
+	if [ ! -z "${FINALIZE}" ]; then
 		finalize | tee ${CURRENT_DIR}/finalize-log.txt
+	fi
 		unmount_sdimagefile
 
 		if [[ ${INST_UBOOT} == 'yes' ]]; then
