@@ -92,7 +92,7 @@ echo "#---------------     +++ generating sd-card image  zzz  +++ ........  ----
 echo "#---------------------------  Please  wait   -----------------------------------#"
 echo "#-------------------------------------------------------------------------------#"
 
-sudo dd if=/dev/zero of=${IMG_FILE} bs=4K count=1675K
+sudo dd if=/dev/zero of=${IMG_FILE} bs=4K count=1000K
 mount_sd_image_file
 
 if [ "${IMG_PARTS}" == "2" ]; then

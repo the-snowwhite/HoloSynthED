@@ -876,9 +876,10 @@ make_bmap_image() {
 	echo "NOTE:  Will now make bmap image"
 	echo ""
 	cd ${CURRENT_DIR}
-	bmaptool create -o ${SD_IMG_FILE}.bmap ${SD_IMG_FILE}
-	tar -cjSf ${SD_IMG_FILE}.tar.bz2 ${SD_IMG_FILE}
-	tar -cjSf ${SD_IMG_FILE}-bmap.tar.bz2 ${SD_IMG_FILE}.tar.bz2 ${SD_IMG_FILE}.bmap
+	bmaptool create -o ${SD_IMG_NAME}.bmap ${SD_IMG_NAME}
+#	tar -cjSf ${SD_IMG_FILE}.tar.bz2 ${SD_IMG_FILE}
+#	tar -cjSf ${SD_IMG_FILE}-bmap.tar.bz2 ${SD_IMG_FILE}.tar.bz2 ${SD_IMG_FILE}.bmap
+	tar -cjSf ${SD_IMG_NAME}-bmap.tar.bz2 ${SD_IMG_NAME} ${SD_IMG_NAME}.bmap
 	echo ""
 	echo "NOTE:  Bmap image created"
 	echo ""
