@@ -152,6 +152,7 @@ Name=eth0
 
 [Network]
 DHCP=v4
+MTU=9000
 
 [DHCP]
 UseDomains=true

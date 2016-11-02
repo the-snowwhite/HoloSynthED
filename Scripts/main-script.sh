@@ -27,22 +27,21 @@ distro=jessie
 #distro=stretch
 
 ## 2 part Expandable image
-IMG_ROOT_PART=p2
+IMG_ROOT_PART=p3
 
-BOARD=de0-nano-soc
-#BOARD=de1-soc
+#BOARD=de0-nano-soc
+BOARD=de1-soc
 #BOARD=sockit
 
-UBOOT_VERSION="v2016.07"
+#UBOOT_VERSION="v2016.07"
+UBOOT_VERSION="v2016.09"
 #UBOOT_VERSION="v2016.05"
 UBOOT_MAKE_CONFIG='u-boot-with-spl.sfp'
-APPLY_UBOOT_PATCH=yes
-#APPLY_UBOOT_PATCH=""
-USER_NAME=machinekit;
-#USER_NAME=holosynth;
+#USER_NAME=machinekit;
+USER_NAME=holosynth;
 
-ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
-#ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
+#ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
+ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
 #ALT_GIT_KERNEL_VERSION="4.7"
 #------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------- #
@@ -52,10 +51,11 @@ ALT_GIT_KERNEL_VERSION="4.1-ltsi-rt"
 #INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
-#BUILD_UBOOT="yes";
+BUILD_UBOOT="yes";
+APPLY_UBOOT_PATCH=yes
 # #
-#BUILD_KERNEL="yes";
-#KERNEL_2_REPO="yes";
+BUILD_KERNEL="yes";
+KERNEL_2_REPO="yes";
 #CLEAN_KERNELREPO="yes";
 # # #
 #	#CROSS_BUILD_DTC="yes";
@@ -349,7 +349,7 @@ done
 
 mount_sdimagefile(){
 	sudo sync
-	LOOP_DEV=`eval sudo losetup -f --show ${SD_IMG_FILE}`
+	LOOP_DEV=`eval sudo losetup -Pf --show ${SD_IMG_FILE}`
 	sudo mkdir -p ${ROOTFS_MNT}
 	sudo mount ${LOOP_DEV}${IMG_ROOT_PART} ${ROOTFS_MNT}
 	echo "#--------------------------------------------------------------------------------------#"
@@ -416,6 +416,8 @@ bind_unmount_rootfs_imagefile(){
 	if [ -d "${ROOTFS_MNT}/home" ]; then
 		echo ""
 		echo "Scr_MSG: Will now (unbind) ummount ${ROOTFS_MNT}"
+		PREFIX=${ROOTFS_MNT}
+		kill_ch_proc
 		RES=`eval sudo umount -R ${ROOTFS_MNT}`
 		echo ""
 		echo "Scr_MSG: Unmont result = ${RES}"
@@ -558,6 +560,8 @@ set -x
 
 ln -s /proc/mounts /etc/mtab
 
+
+
 cat << EOT >/etc/fstab
 # /etc/fstab: static file system information.
 #
@@ -566,6 +570,7 @@ cat << EOT >/etc/fstab
 tmpfs              /tmp            tmpfs   defaults                  0 0
 none               /dev/shm        tmpfs   rw,nosuid,nodev,noexec    0 0
 /sys/kernel/config /config         none    bind                      0 0
+/dev/mmcblk0p2     swap            swap    defaults                  0 0
 EOT
 
 
@@ -1059,7 +1064,7 @@ set -e
 	fi
 
 	if [[ ${CREATE_BMAP} == 'yes' ]]; then ## replace old image with a fresh:
-		IMG_PARTS=2
+		IMG_PARTS=3
 		create_image
 		if [[ "${USER_NAME}" == "machinekit" ]]; then
 			hostname="mksocfpga3"

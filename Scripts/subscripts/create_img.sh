@@ -19,7 +19,8 @@ ext4_options="-O ^metadata_csum,^64bit"
 mkfs_options=""
 
 mkfs="mkfs.${ROOTFS_TYPE}"
-media_rootfs_partition=p2
+media_rootfs_partition=p3
+media_swap_partition=p2
 
 mkfs_label="-L ${ROOTFS_LABEL}"
 
@@ -71,14 +72,14 @@ n
 p
 2
 
-+5600M
++1024M
 n
 p
 3
 
 
 t
-3
+2
 82
 w
 EOF
@@ -92,7 +93,7 @@ echo "#---------------     +++ generating sd-card image  zzz  +++ ........  ----
 echo "#---------------------------  Please  wait   -----------------------------------#"
 echo "#-------------------------------------------------------------------------------#"
 
-sudo dd if=/dev/zero of=${IMG_FILE} bs=4K count=1000K
+sudo dd if=/dev/zero of=${IMG_FILE} bs=4K count=1700K
 mount_sd_image_file
 
 if [ "${IMG_PARTS}" == "2" ]; then
@@ -111,6 +112,7 @@ sudo sync
 echo "SubScr_MSG: creating file systems"
 media_prefix=${LOOP_DEV}
 mkfs_partition="${media_prefix}${media_rootfs_partition}"
+mkswap -f ${media_swap_partition}
 
 sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_options} ${mkfs_partition} ${mkfs_label}"
 
