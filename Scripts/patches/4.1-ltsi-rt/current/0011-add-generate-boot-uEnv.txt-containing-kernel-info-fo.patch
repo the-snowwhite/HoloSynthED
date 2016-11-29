@@ -1,0 +1,32 @@
+From 16cdfd5623f90f2c18e3d0d06e635fa7f64e17c8 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sat, 6 Aug 2016 15:49:31 +0200
+Subject: [PATCH 11/12] add generate /boot/uEnv.txt containing kernel info for
+ uboot probing
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ scripts/package/builddeb | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 67770e9..3e0abd0 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -183,6 +183,13 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
+ else
+ 	want_initrd=No
+ fi
++ 
++# create uEnv.txt containing current kernelversio in /boot folder (for u-boot probing)
++	cat <<EOF > "$tmpdir/boot/uEnv.txt"
++kver=${version}
++initrd_installed=$want_initrd
++EOF
++
+ for script in postinst postrm preinst prerm ; do
+ 	mkdir -p "$tmpdir$debhookdir/$script.d"
+ 	cat <<EOF > "$tmpdir/DEBIAN/$script"
+-- 
+2.7.4
+

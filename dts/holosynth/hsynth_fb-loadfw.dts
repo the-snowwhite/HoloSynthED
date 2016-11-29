@@ -1,0 +1,29 @@
+/dts-v1/ /plugin/;
+
+/ {
+   fragment@0 {
+      target-path = "/soc/base_fpga_region";
+		#address-cells = <1>;
+		#size-cells = <1>;
+      __overlay__ {
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			ranges = <0x00000100 0xff280000 0x00000080>;
+			firmware-name = "socfpga/DE1_SOC_Linux_FB.rbf";
+
+			alt_vip_vfr_vga: vip@0x80000 {
+				compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
+				reg = <0x80000 0x00080>;
+				clocks = <0 0 &osc1>;
+				max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
+				max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
+				bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
+				colors-per-beat = <4>;
+				beats-per-pixel = <1>;
+				mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
+			};
+		};
+	};
+};
+

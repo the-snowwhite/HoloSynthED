@@ -1,0 +1,72 @@
+From 92e6664ce01d5d36c592e3c663fe09cbf400627f Mon Sep 17 00:00:00 2001
+From: the-snowwhite <producer@holotronic.dk>
+Date: Thu, 20 Oct 2016 02:53:36 +0200
+Subject: [PATCH 3/3] Add EXT4 support
+
+---
+ include/config_cmd_all.h               |  3 +++
+ include/configs/socfpga_common.h       | 11 ++++++++---
+ include/configs/socfpga_de0_nano_soc.h |  5 +++--
+ 3 files changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/include/config_cmd_all.h b/include/config_cmd_all.h
+index b5fd6c6..94b6273 100644
+--- a/include/config_cmd_all.h
++++ b/include/config_cmd_all.h
+@@ -53,5 +53,8 @@
+ #define CONFIG_CMD_UNIVERSE	/* Tundra Universe Support	*/
+ #define CONFIG_CMD_UNZIP	/* unzip from memory to memory	*/
+ #define CONFIG_CMD_ZFS		/* ZFS Support			*/
++#define CONFIG_CMD_EXT4_WRITE
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_FS_GENERIC
+ 
+ #endif	/* _CONFIG_CMD_ALL_H */
+diff --git a/include/configs/socfpga_common.h b/include/configs/socfpga_common.h
+index f654f94..645adc3 100644
+--- a/include/configs/socfpga_common.h
++++ b/include/configs/socfpga_common.h
+@@ -267,9 +267,14 @@ unsigned int cm_get_qspi_controller_clk_hz(void);
+ #endif
+ 
+ /* Environment for SDMMC boot */
+-#if defined(CONFIG_ENV_IS_IN_MMC) && !defined(CONFIG_ENV_OFFSET)
+-#define CONFIG_SYS_MMC_ENV_DEV		0	/* device 0 */
+-#define CONFIG_ENV_OFFSET		512	/* just after the MBR */
++//#if defined(CONFIG_ENV_IS_IN_MMC) && !defined(CONFIG_ENV_OFFSET)
++#ifdef CONFIG_ENV_IS_IN_MMC
++#define MMC_ENV_INTERFACE "mmc"
++#define MMC_ENV_DEVICE_AND_PART "0:2"
++#define MMC_ENV_FILE "uboot.env"
++#endif
++//#define CONFIG_SYS_MMC_ENV_DEV		0	/* device 0 */
++//#define CONFIG_ENV_OFFSET		512	/* just after the MBR */
+ #endif
+ 
+ /* Environment for QSPI boot */
+diff --git a/include/configs/socfpga_de0_nano_soc.h b/include/configs/socfpga_de0_nano_soc.h
+index 1584adc..387b588 100644
+--- a/include/configs/socfpga_de0_nano_soc.h
++++ b/include/configs/socfpga_de0_nano_soc.h
+@@ -11,7 +11,8 @@
+ /* U-Boot Commands */
+ #define CONFIG_SYS_NO_FLASH
+ #define CONFIG_DOS_PARTITION
+-#define CONFIG_FAT_WRITE
++//#define CONFIG_FAT_WRITE
++#define CONFIG_EXT4_WRITE
+ #define CONFIG_HW_WATCHDOG
+ 
+ /* Memory configurations */
+@@ -106,7 +107,7 @@
+ 			"setenv fdtimage ${dtbfolder}socfpga_cyclone5_de0_sockit.dtb; fi; " \
+ 		"if test ${fdtimage} = undefined; then " \
+ 			"echo WARNING: Could not determine device tree to use; fi; \0" \
+-		
++
+ /* The rest of the configuration is shared */
+ #include <configs/socfpga_common.h>
+ 
+-- 
+2.9.3
+

@@ -1,0 +1,54 @@
+/*
+ * Copyright Altera Corporation (C) 2015. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms and conditions of the GNU General Public License,
+ * version 2, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ /dts-v1/ /plugin/;
+/ {
+
+	fragment@0 {
+		target-path = "/soc/base-fpga-region";
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			external-fpga-config;
+
+			uioreg_io_0: uio-socfpg0@0x40000 {
+				compatible = "uioreg_io,generic-uio,ui_pdrv";
+				reg = <0x40000 0x10000>;
+				interrupt-parent = <0x2>;
+				interrupts = <0 43 4>;
+				clocks = <&osc1>;
+				address_width = <14>;
+				data_width = <32>;
+			};
+
+			alt_vip_vfr_vga: vip@0x00100 {
+				compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
+				reg = <0x00100 0x00080>;
+				clocks = <0 0 &osc1>;
+				max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
+				max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
+				bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
+				colors-per-beat = <4>;
+				beats-per-pixel = <1>;
+				mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
+			};
+		};
+	};
+};

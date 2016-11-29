@@ -1,0 +1,295 @@
+From 28b5e9ea8f4de40dd75b3c444cba6e90c752d670 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sat, 16 Jul 2016 22:21:55 +0200
+Subject: [PATCH 01/10] disable CONFIG_LOCALVERSION_AUTO for consistant
+ apt-updatable kernelversion name
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index d4c6629..7eaa3a0 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -160,3 +160,4 @@ CONFIG_DETECT_HUNG_TASK=y
+ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
++CONFIG_LOCALVERSION_AUTO=n
+-- 
+2.7.4
+
+
+From bd48bddb4e66fe70725762e8d5f416dd7ed82401 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sat, 16 Jul 2016 22:25:32 +0200
+Subject: [PATCH 02/10] enable jumboframes maxmtu=9000
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+index 555e9ca..5b79c0c 100644
+--- a/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
++++ b/arch/arm/boot/dts/socfpga_cyclone5_de0_sockit.dts
+@@ -69,7 +69,7 @@
+ 	rxdv-skew-ps = <420>; /* 0ps */
+ 	rxc-skew-ps = <1680>; /* 780ps */
+ 
+-	max-frame-size = <3800>;
++	max-frame-size = <9000>;
+ };
+ 
+ &gpio0 {
+-- 
+2.7.4
+
+
+From ceedfdcd10d6ed81bae83d5888252aeb4894adff Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 17 Jul 2016 00:41:30 +0200
+Subject: [PATCH 03/10] add uio driver support
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 7eaa3a0..717954e 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -161,3 +161,6 @@ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
+ CONFIG_LOCALVERSION_AUTO=n
++CONFIG_UIO=y
++CONFIG_UIO_PDRV=y
++CONFIG_UIO_PDRV_GENIRQ=y
+-- 
+2.7.4
+
+
+From c140e0a42d6a1376488ca1067a850a01cd3162a1 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 17 Jul 2016 01:20:55 +0200
+Subject: [PATCH 04/10] add configfs and fpgacfg dts entities, and dynamic dts
+ overlay support
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 717954e..71daf98 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -164,3 +164,5 @@ CONFIG_LOCALVERSION_AUTO=n
+ CONFIG_UIO=y
+ CONFIG_UIO_PDRV=y
+ CONFIG_UIO_PDRV_GENIRQ=y
++CONFIG_CONFIGFS_FS=y
++CONFIG_OF_OVERLAY=y
+-- 
+2.7.4
+
+
+From d171f657297f15333f2cfd392da176c42a8cbcd6 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 17 Jul 2016 01:31:34 +0200
+Subject: [PATCH 05/10] add ext4 root fs support and autofs4 module
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 71daf98..d758be5 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -11,7 +11,7 @@ CONFIG_EMBEDDED=y
+ CONFIG_PROFILING=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+-# CONFIG_LBDAF is not set
++CONFIG_LBDAF=y
+ # CONFIG_BLK_DEV_BSG is not set
+ # CONFIG_IOSCHED_DEADLINE is not set
+ # CONFIG_IOSCHED_CFQ is not set
+@@ -166,3 +166,6 @@ CONFIG_UIO_PDRV=y
+ CONFIG_UIO_PDRV_GENIRQ=y
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
++CONFIG_EXT4_FS_POSIX_ACL=y
++CONFIG_EXT4_FS_SECURITY=y
++CONFIG_AUTOFS4_FS=y
+-- 
+2.7.4
+
+
+From e45fbde2f587827f77bba20d47b90a9867e4efed Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 17 Jul 2016 01:38:04 +0200
+Subject: [PATCH 06/10] enable initramfs
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index d758be5..d6cb406 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -169,3 +169,13 @@ CONFIG_OF_OVERLAY=y
+ CONFIG_EXT4_FS_POSIX_ACL=y
+ CONFIG_EXT4_FS_SECURITY=y
+ CONFIG_AUTOFS4_FS=y
++CONFIG_BLK_DEV_INITRD=y
++CONFIG_INITRAMFS_SOURCE=""
++CONFIG_INITRAMFS_ROOT_UID=0
++CONFIG_INITRAMFS_ROOT_GID=0
++CONFIG_RD_GZIP=y
++CONFIG_RD_BZIP2=y
++CONFIG_RD_LZMA=y
++CONFIG_RD_XZ=y
++CONFIG_RD_LZO=y
++CONFIG_RD_LZ4=y
+-- 
+2.7.4
+
+
+From 2c4ef634a4f9010b2fd74d005c7c669b3d38a819 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sun, 17 Jul 2016 14:10:56 +0200
+Subject: [PATCH 07/10] add .dtd files to kernel-image .deb
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ scripts/package/builddeb | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 88dbf23..67770e9 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -110,7 +110,7 @@ BUILD_DEBUG="$(grep -s '^CONFIG_DEBUG_INFO=y' $KCONFIG_CONFIG || true)"
+ # Setup the directory structure
+ rm -rf "$tmpdir" "$fwdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir"
+ mkdir -m 755 -p "$tmpdir/DEBIAN"
+-mkdir -p  "$tmpdir/lib" "$tmpdir/boot" "$tmpdir/usr/share/doc/$packagename"
++mkdir -p  "$tmpdir/lib" "$tmpdir/boot/dtb" "$tmpdir/usr/share/doc/$packagename"
+ mkdir -m 755 -p "$fwdir/DEBIAN"
+ mkdir -p "$fwdir/lib/firmware/$version/" "$fwdir/usr/share/doc/$fwpackagename"
+ mkdir -m 755 -p "$libc_headers_dir/DEBIAN"
+@@ -139,8 +139,10 @@ fi
+ # Not all arches include the boot path in KBUILD_IMAGE
+ if [ -e $KBUILD_IMAGE ]; then
+ 	cp $KBUILD_IMAGE "$tmpdir/$installed_image_path"
++	cp dts/*.dtb "$tmpdir/boot/dtb"
+ else
+ 	cp arch/$ARCH/boot/$KBUILD_IMAGE "$tmpdir/$installed_image_path"
++	cp arch/$ARCH/boot/dts/*.dtb "$tmpdir/boot/dtb"
+ fi
+ 
+ if grep -q '^CONFIG_MODULES=y' $KCONFIG_CONFIG ; then
+-- 
+2.7.4
+
+
+From 5ad14ed6cd6b23d40dd41f5d6d27b5f46e34e8be Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 18 Jul 2016 16:21:56 +0200
+Subject: [PATCH 08/10] add generate /boot/uEnv.txt containing kernel info for
+ uboot probing
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ scripts/package/builddeb | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index 67770e9..3e0abd0 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -183,6 +183,13 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
+ else
+ 	want_initrd=No
+ fi
++ 
++# create uEnv.txt containing current kernelversio in /boot folder (for u-boot probing)
++	cat <<EOF > "$tmpdir/boot/uEnv.txt"
++kver=${version}
++initrd_installed=$want_initrd
++EOF
++
+ for script in postinst postrm preinst prerm ; do
+ 	mkdir -p "$tmpdir$debhookdir/$script.d"
+ 	cat <<EOF > "$tmpdir/DEBIAN/$script"
+-- 
+2.7.4
+
+
+From 88ce06339fae26c776ad594310abef52ca2055f0 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Sat, 23 Jul 2016 19:52:59 +0200
+Subject: [PATCH 09/10] change uio_pdrv_genirq to module
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index d6cb406..49399e4 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -161,9 +161,9 @@ CONFIG_FUNCTION_TRACER=y
+ CONFIG_DEBUG_USER=y
+ CONFIG_XZ_DEC=y
+ CONFIG_LOCALVERSION_AUTO=n
+-CONFIG_UIO=y
+-CONFIG_UIO_PDRV=y
+-CONFIG_UIO_PDRV_GENIRQ=y
++CONFIG_UIO=m
++CONFIG_UIO_PDRV=m
++CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_EXT4_FS_POSIX_ACL=y
+-- 
+2.7.4
+
+
+From 9be7c4397a4cb3933db8a46855e921b17862d41f Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 00:17:44 +0200
+Subject: [PATCH 10/10] disable debug package gen
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 49399e4..950821c 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -153,7 +153,7 @@ CONFIG_ROOT_NFS=y
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ISO8859_1=y
+ CONFIG_PRINTK_TIME=y
+-CONFIG_DEBUG_INFO=y
++CONFIG_DEBUG_INFO=n
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DETECT_HUNG_TASK=y
+ # CONFIG_SCHED_DEBUG is not set
+-- 
+2.7.4
+

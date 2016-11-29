@@ -1,0 +1,39 @@
+From 9c9997a6c950e9947033cd6a52a3c0c479eb513b Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 19:32:34 +0200
+Subject: [PATCH 09/12] enable alt vip framebuffer in kernel as module
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index bbca942..1e85d8a 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -178,3 +178,21 @@ CONFIG_RD_LZMA=y
+ CONFIG_RD_XZ=y
+ CONFIG_RD_LZO=y
+ CONFIG_RD_LZ4=y
++CONFIG_VT_HW_CONSOLE_BINDING=y
++CONFIG_FB=y
++CONFIG_FB_CFB_FILLRECT=y
++CONFIG_FB_CFB_COPYAREA=y
++CONFIG_FB_CFB_IMAGEBLIT=y
++CONFIG_FB_ALTERA_VIP=m
++CONFIG_VGACON_SOFT_SCROLLBACK=y
++CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=64
++CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
++CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
++CONFIG_LOGO=y
++CONFIG_LOGO_LINUX_MONO=y
++CONFIG_LOGO_LINUX_VGA16=y
++CONFIG_LOGO_LINUX_CLUT224=y
++CONFIG_FONT_SUPPORT=y
++CONFIG_FONT_8x8=y
++CONFIG_FONT_8x16=y
+-- 
+2.7.4
+

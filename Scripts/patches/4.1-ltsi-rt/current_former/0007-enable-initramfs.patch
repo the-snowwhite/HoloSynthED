@@ -1,0 +1,31 @@
+From 485c48f66b5d1132bc1f243ffb287cbc315d757e Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:18:11 +0200
+Subject: [PATCH 07/12] enable initramfs
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index ec71e8e..8f27ae0 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -168,3 +168,13 @@ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_LOCALVERSION_AUTO=n
++CONFIG_BLK_DEV_INITRD=y
++CONFIG_INITRAMFS_SOURCE=""
++CONFIG_INITRAMFS_ROOT_UID=0
++CONFIG_INITRAMFS_ROOT_GID=0
++CONFIG_RD_GZIP=y
++CONFIG_RD_BZIP2=y
++CONFIG_RD_LZMA=y
++CONFIG_RD_XZ=y
++CONFIG_RD_LZO=y
++CONFIG_RD_LZ4=y
+-- 
+2.7.4
+

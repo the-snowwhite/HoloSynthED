@@ -1,0 +1,23 @@
+From c760f766c8324c73f9aa0bf9535b6ca84b2fb129 Mon Sep 17 00:00:00 2001
+From: Michael Brown <producer@holotronic.dk>
+Date: Mon, 1 Aug 2016 09:10:28 +0200
+Subject: [PATCH 05/12] disable CONFIG_LOCALVERSION_AUTO for consistant
+ apt-updatable kernelversion name
+
+Signed-off-by: Michael Brown <producer@holotronic.dk>
+---
+ arch/arm/configs/socfpga_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/configs/socfpga_defconfig b/arch/arm/configs/socfpga_defconfig
+index 651c733..ec71e8e 100644
+--- a/arch/arm/configs/socfpga_defconfig
++++ b/arch/arm/configs/socfpga_defconfig
+@@ -167,3 +167,4 @@ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_CONFIGFS_FS=y
+ CONFIG_OF_OVERLAY=y
++CONFIG_LOCALVERSION_AUTO=n
+-- 
+2.7.4
+
