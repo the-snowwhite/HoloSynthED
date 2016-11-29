@@ -9,7 +9,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			ranges = <0x00000000 0xff240000 0x00010000>;
 			external-fpga-config;
 
 			uioreg_io_0: uio-socfpg0@0x40000 {

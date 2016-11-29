@@ -51,11 +51,10 @@ ALT_GIT_KERNEL_VERSION="4.1.22-ltsi-rt"
 #INSTALL_DEPS="yes"; # --->- only needed on first new run of a function see function above -------#
 
 #
-BUILD_UBOOT="yes";
-APPLY_UBOOT_PATCH=yes
+#BUILD_UBOOT="yes"; APPLY_UBOOT_PATCH=yes
 # #
 BUILD_KERNEL="yes";
-KERNEL_2_REPO="yes";
+KERNEL_2_REPO="yes"; 
 #CLEAN_KERNELREPO="yes";
 # # #
 #	#CROSS_BUILD_DTC="yes";
@@ -66,8 +65,11 @@ KERNEL_2_REPO="yes";
 #MAKE_NEW_ROOTFS="yes";
 #
 #ADD_SD_USER="yes";
+
+#INST_QT="yes"; 
+MAKE_QT_IMAGE="yes";
 #
-#INST_QT="yes";INST_QT_DEPS="yes";
+#INST_QT_DEPS="yes";
 #
 #INST_LOCALKERNEL_DEBS="yes";GEN_UINITRD_SCRIPT="yes";
 #
@@ -75,9 +77,12 @@ KERNEL_2_REPO="yes";
 # #	ISCSI_CONV="yes";
 #
 #
-CREATE_BMAP="yes"; FINALIZE="yes"; INST_UBOOT="yes";
+#CREATE_BMAP="yes"; FINALIZE="yes"; INST_UBOOT="yes";
 #
-
+#COMPRESS_ROOTFS_FROM_SD="yes"; CUSTOM_SD_DEV="/dev/sdb"; CUSTOM_ROOT_PART=2;
+#EXTRACT_ROOTFS_TO_SD="yes"; CUSTOM_SD_DEV="/dev/sdb"; CUSTOM_ROOT_PART=2;
+#CUSTOM_PREFIX="tesasic-ubuntu_4.5-custom"
+#CUSTOM_PREFIX="final_holosynth-with-kernel"
 
 #------------------------------------------------------------------------------------------------------
 # Variables Prerequsites
@@ -170,8 +175,8 @@ KERNEL_PARENT_DIR=${CURRENT_DIR}/arm-linux-${KERNEL_MIDDLE_NAME}-gnueabifh-kerne
 UBOOT_SPLFILE=${CURRENT_DIR}/uboot/${UBOOT_MAKE_CONFIG}
 
 #KERNEL_TAG="${KERNEL_VERSION}-${KERNEL_LOCALVERSION}"
-#KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
-KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
+KERNEL_TAG="${KERNEL_VERSION}.*-${KERNEL_LOCALVERSION}"
+#KERNEL_TAG="4.1.17-ltsi-rt17-${KERNEL_LOCALVERSION}"
 
 #-----------------------------------------------------------------------------------
 # local functions for external scripts
@@ -297,22 +302,24 @@ echo ""
 echo "Script_MSG: Installing Qt Build Deps"
 echo ""
 
-# #sudo cp -f ${CURRENT_DIR}/sources.list ${ROOTFS_MNT}/etc/apt/sources.list-local
 sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-local ${ROOTFS_MNT}/etc/apt/sources.list
 
 sudo rm -f ${ROOTFS_MNT}/etc/resolv.conf
 sudo cp -f /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
 
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} update
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y build-dep qt5-default
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libxcb-xinerama0-dev libc6-dev
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install "^libxcb.*" libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libasound2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
-sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libxcb1 libxcb1-dev libx11-xcb1 libx11-xcb-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-image0 libxcb-image0-dev libxcb-shm0 libxcb-shm0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-sync1 libxcb-sync0-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-xfixes0-dev libxrender-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-glx0-dev
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libasound2-dev 
+#libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install libxcb1 libxcb1-dev libx11-xcb1 libx11-xcb-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-image0 libxcb-image0-dev libxcb-shm0 libxcb-shm0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-sync1 libxcb-sync0-dev libxcb-xfixes0-dev libxrender-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-glx0-dev
+set +e
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y build-dep qt5-default
+sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install
 
-echo ""
-echo "Script_MSG: Installing Qt into rootfs.img "
-echo ""
+# echo ""
+# echo "Script_MSG: Installing Qt into rootfs.img "
+# echo ""
 cd ${CURRENT_DIR}
 
 sudo cp -f ${ROOTFS_MNT}/etc/apt/sources.list-final ${ROOTFS_MNT}/etc/apt/sources.list
@@ -413,15 +420,15 @@ bind_unmount_rootfs_imagefile(){
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo ""
 	sudo sync
-	if [ -d "${ROOTFS_MNT}/home" ]; then
-		echo ""
 		echo "Scr_MSG: Will now (unbind) ummount ${ROOTFS_MNT}"
-		PREFIX=${ROOTFS_MNT}
-		kill_ch_proc
 		RES=`eval sudo umount -R ${ROOTFS_MNT}`
 		echo ""
 		echo "Scr_MSG: Unmont result = ${RES}"
 		echo "Scr_MSG: Unmont return value = ${?}"
+	if [ -d "${ROOTFS_MNT}/home" ]; then
+		echo ""
+		PREFIX=${ROOTFS_MNT}
+		kill_ch_proc
 		echo ""
 	else
 		echo ""
@@ -441,7 +448,7 @@ if [ ! -z "${COMP_PREFIX}" ]; then
 	echo "#---------------------------------------------------------------------------#"
 	echo "#Scr_MSG:                                                                   #"
 	echo "compressing latest rootfs from image into: -->   ---------------------------#"
-	echo " ${CURRENT_DIR}/${COMPNAME}--rootfs.tar.bz2"
+	echo " ${CURRENT_DIR}/${COMPNAME}-rootfs.tar.bz2"
 	cd ${ROOTFS_MNT}
 	sudo tar -cjSf ${CURRENT_DIR}/${COMPNAME}-rootfs.tar.bz2 *
 	cd ${CURRENT_DIR}
@@ -490,7 +497,6 @@ export LANG=C
 
 '${apt_cmd}' -y update
 '${apt_cmd}' -y --force-yes upgrade
-
 echo "root:'${USER_NAME}'" | chpasswd
 
 echo "ECHO: " "Will add user '${USER_NAME}' pw: '${USER_NAME}'"
@@ -540,11 +546,6 @@ EOF'
 sudo chmod +x ${ROOTFS_MNT}/home/add_user.sh
 
 sudo chroot ${ROOTFS_MNT} /bin/su -l root /usr/sbin/locale-gen en_GB.UTF-8 en_US.UTF-8
-
-echo ""
-echo "Scr_MSG: fix no sudo user ping:"
-echo ""
-sudo chmod u+s ${ROOTFS_MNT}/bin/ping ${ROOTFS_MNT}/bin/ping6
 
 }
 
@@ -618,6 +619,11 @@ gen_add_user_sh
 echo "Script_MSG: gen_add_user_sh finished ... will now run in chroot"
 
 sudo chroot ${ROOTFS_MNT} /bin/bash -c /home/add_user.sh
+
+echo ""
+echo "Scr_MSG: fix no sudo user ping:"
+echo ""
+sudo chmod u+s ${ROOTFS_MNT}/bin/ping ${ROOTFS_MNT}/bin/ping6
 
 echo "Script_MSG: installing apt-transport-https"
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
@@ -742,12 +748,12 @@ sudo cp -f /etc/resolv.conf ${ROOTFS_MNT}/etc/resolv.conf
 #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y install apt-transport-https
 
 #sudo sh -c 'echo "deb [arch=armhf] https://deb.mah.priv.at/ jessie socfpga" > '${ROOTFS_MNT}'/etc/apt/sources.list.d/debmah.list'
-sudo sh -c 'echo "deb [arch=armhf] http://kubuntu16-ws.holotronic.lan/debian jessie main" > '${ROOTFS_MNT}'/etc/apt/sources.list.d/mibsocdeb.list'
+sudo sh -c 'echo "deb [arch=armhf] http://kubuntu16-ws.holotronic.lan/debian '${distro}' main" > '${ROOTFS_MNT}'/etc/apt/sources.list.d/mibsocdeb.list'
 echo ""
 echo "Script_MSG: Will now add key to kubuntu16-ws"
 echo ""
 set +e
-sudo sh -c 'wget -O - http://kubuntu16-ws.holotronic.lan/debian/socfpgakernel.gpg.key|apt-key add -'
+sudo sh -c 'wget -O - http://kubuntu16-ws.holotronic.lan/debian/socfpgakernels.gpg.key|apt-key add -'
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/${apt_cmd} -y update
 
 # #sudo chroot --userspec=root:root ${ROOTFS_MNT} /usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv 4FD9D713
@@ -806,8 +812,8 @@ if [[ "${USER_NAME}" == "holosynth" ]]; then
 	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/uioreg_uio.dtbo ${DTS_DIR}/holosynth/uioreg_uio.dts
 #	sudo cp ${DTS_DIR}/hsynth_fb.sh ${ROOTFS_MNT}/etc/init.d/
 #	sudo chmod +x ${ROOTFS_MNT}/etc/init.d/hsynth_fb.sh
-	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
-	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/HolosynthIV_DE1SoC-Q15.0_15-inch-lcd/output_files/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/boot
+	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/DE1_SOC_Linux_FB/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/lib/firmware/socfpga
+	sudo cp /home/mib/Developer/the-snowwhite_git/HolosynthV/QuartusProjects/DE1_SOC_Linux_FB/DE1_SOC_Linux_FB.rbf ${ROOTFS_MNT}/boot
 #	sudo chroot --userspec=root:root ${ROOTFS_MNT} update-rc.d hsynth_fb.sh defaults
 #	sudo dtc -I dts -O dtb -b 0 -@ -o ${ROOTFS_MNT}/lib/firmware/socfpga/hsynth_fb.dtbo ${DTS_DIR}/hsynth_fb.dts
 
@@ -860,6 +866,24 @@ sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/rm -f /etc/resolv.conf
 sudo chroot --userspec=root:root ${ROOTFS_MNT} /bin/ln -s /lib/systemd/system/systemd-resolved.service /etc/resolv.conf
 
 echo ""
+echo "# --------->       Enable program fpga @ u-boot         <--------------- ---------"
+echo ""
+
+if [ "${USER_NAME}" == "holosynth" ]; then
+sudo sh -c 'cat <<EOF >> '${ROOTFS_MNT}'/boot/uEnv.txt
+hostname=holosynthv
+bitimage=/boot/DE1_SOC_Linux_FB.rbf
+fpgaload=mmc rescan;load mmc \${bootpart} \${loadaddr} \${bitimage}; fpga load 0 \${loadaddr} \${filesize}
+axibridge=ffd0501c
+axibridge_handoff=0x00000000
+l3remap=ff800000
+l3remap_handoff=0x00000019
+bridge_enable_handoff=mw \${axibridge} \${axibridge_handoff}; mw \${l3remap} \${l3remap_handoff} 
+loadimage=run fpgaload; run bridge_enable_handoff; load mmc \${bootpart} \${loadaddr} \${bootimage}; load mmc \${bootpart} \${fdt_addr} \${fdtimage}
+EOF'
+fi
+
+echo ""
 echo "# --------- ------------>   Finalized    --- --------- --------------- ---------"
 echo ""
 
@@ -899,7 +923,7 @@ format_rootfs(){
 
 	mkfs="mkfs.${ROOTFS_TYPE}"
 	media_prefix=${LOOP_DEV}
-	media_rootfs_partition=p2
+	media_rootfs_partition=${IMG_ROOT_PART}
 
 	mkfs_partition="${media_prefix}${media_rootfs_partition}"
 	mkfs_label="-L ${ROOTFS_LABEL}"
@@ -909,7 +933,7 @@ format_rootfs(){
 #	sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_partition} ${mkfs_label}"
 }
 
-inst_comp_prefis_rootfs(){
+inst_comp_prefix_rootfs(){
 	mount_rootfs_imagefile
 	extract_rootfs
 	VIRGIN_IMAGE=""
@@ -980,7 +1004,7 @@ set -e
 	if [[ ${ADD_SD_USER} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
 			COMP_PREFIX=raw
-			inst_comp_prefis_rootfs
+			inst_comp_prefix_rootfs
 			VIRGIN_IMAGE=""
 		fi
 		mount_rootfs_imagefile
@@ -996,7 +1020,7 @@ set -e
 		if [[ "${USER_NAME}" == "holosynth" ]]; then
 			if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
 				COMP_PREFIX=final_${USER_NAME}
-				inst_comp_prefis_rootfs
+				inst_comp_prefix_rootfs
 				VIRGIN_IMAGE=""
 			fi
 			if [[ ${INST_QT_DEPS} == 'yes' ]]; then
@@ -1007,21 +1031,21 @@ set -e
 			fi
  			qt_build | tee ${CURRENT_DIR}/qt_build-log.txt
 
-			cp ${CURRENT_DIR}/rootfs.img ${CURRENT_DIR}/rootfs-qt-4.1.img
+			cp ${CURRENT_DIR}/rootfs.img ${CURRENT_DIR}/${distro}_rootfs-qt-4.1.img
 			COMP_PREFIX=final_${USER_NAME}_qt
 			compress_prefix_rootfs
 		fi
 	fi
 
-	if [ "${USER_NAME}" == "machinekit" ]; then
-		COMP_PREFIX=final_${USER_NAME}
-	elif  [ "${USER_NAME}" == "holosynth" ]; then
+	if [ "${MAKE_QT_IMAGE}" == "yes" ]; then
 		COMP_PREFIX=final_${USER_NAME}_qt
+	else
+		COMP_PREFIX=final_${USER_NAME}
 	fi
 
 	if [[ ${INST_LOCALKERNEL_DEBS} == 'yes' ]]; then
 		if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
-			inst_comp_prefis_rootfs
+			inst_comp_prefix_rootfs
 			VIRGIN_IMAGE=""
 		fi
 		mount_rootfs_imagefile
@@ -1037,7 +1061,7 @@ set -e
 	else
 		if [[ ${INST_REPOKERNEL_DEBS} == 'yes' ]]; then
 			if [[ ${VIRGIN_IMAGE} == 'yes' ]]; then
-				inst_comp_prefis_rootfs
+				inst_comp_prefix_rootfs
 				VIRGIN_IMAGE=""
 			fi
 			mount_rootfs_imagefile
@@ -1053,10 +1077,10 @@ set -e
 		fi
 	fi
 
-	if [ "${USER_NAME}" == "machinekit" ]; then
-		COMP_PREFIX=final_${USER_NAME}-with-kernel
-	elif  [ "${USER_NAME}" == "holosynth" ]; then
+	if [ "${MAKE_QT_IMAGE}" == "yes" ]; then
 		COMP_PREFIX=final_${USER_NAME}_qt-with-kernel
+	else
+		COMP_PREFIX=final_${USER_NAME}-with-kernel
 	fi
 
 	if [ ! -z "${CUSTOM_PREFIX}" ]; then
@@ -1067,7 +1091,7 @@ set -e
 		IMG_PARTS=3
 		create_image
 		if [[ "${USER_NAME}" == "machinekit" ]]; then
-			hostname="mksocfpga3"
+			hostname="mksocfpga-nano-soc"
 		elif [[ "${USER_NAME}" == "holosynth" ]]; then
 			hostname="holosynthv"
 		fi
@@ -1075,9 +1099,9 @@ set -e
 		mount_sdimagefile
 		extract_rootfs
 
-	if [ ! -z "${FINALIZE}" ]; then
-		finalize | tee ${CURRENT_DIR}/finalize-log.txt
-	fi
+		if [ ! -z "${FINALIZE}" ]; then
+			finalize | tee ${CURRENT_DIR}/finalize-log.txt
+		fi
 		unmount_sdimagefile
 
 		if [[ ${INST_UBOOT} == 'yes' ]]; then
@@ -1089,6 +1113,22 @@ set -e
 		make_bmap_image | tee ${CURRENT_DIR}/make_bmap_image-log.txt
 	fi
 
+	if [[ ${COMPRESS_ROOTFS_FROM_SD} == 'yes' ]]; then 
+		COMP_PREFIX=${CUSTOM_PREFIX}
+		sudo mount ${CUSTOM_SD_DEV}${CUSTOM_ROOT_PART} ${ROOTFS_MNT}
+		compress_rootfs 
+		sudo umount ${ROOTFS_MNT}
+	fi
+
+	if [[ ${EXTRACT_ROOTFS_TO_SD} == 'yes' ]]; then 
+		COMP_PREFIX=${CUSTOM_PREFIX}
+		sudo mount ${CUSTOM_SD_DEV}${CUSTOM_ROOT_PART} ${ROOTFS_MNT}
+		IMG_ROOT_PART=${CUSTOM_ROOT_PART}
+		sudo rm -R -f ${ROOTFS_MNT}/*
+		extract_rootfs 
+		sudo umount ${ROOTFS_MNT}
+	fi
+	
 	echo "#---------------------------------------------------------------------------------- "
 	echo "#-------             Image building process complete                       -------- "
 	echo "#---------------------------------------------------------------------------------- "

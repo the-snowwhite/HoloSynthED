@@ -18,7 +18,7 @@ NCORES=`nproc`
 QT_CC_FOLDER_NAME="gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux"
 #QT_CC_FOLDER_NAME="gcc-linaro-5.2-2015.11-1-x86_64_arm-linux-gnueabihf"
 
-QT_CC_DIR="/home/mib/Development/${QT_CC_FOLDER_NAME}"
+QT_CC_DIR="/home/mib/bin/${QT_CC_FOLDER_NAME}"
 #QT_CC_FILE="${QT_CC_FOLDER_NAME}.tar.xz"
 QT_CC="${QT_CC_DIR}/bin/arm-linux-gnueabihf-"
 

@@ -1,7 +1,7 @@
-From 612f5c64b1de2d441d654016d8fb111ac86ef239 Mon Sep 17 00:00:00 2001
+From 88ce06339fae26c776ad594310abef52ca2055f0 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 23 Jul 2016 19:52:59 +0200
-Subject: [PATCH 09/11] change uio_pdrv_genirq to module
+Subject: [PATCH 09/10] change uio_pdrv_genirq to module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---

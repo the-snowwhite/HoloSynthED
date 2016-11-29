@@ -1,7 +1,7 @@
-From 2c4ef634a4f9010b2fd74d005c7c669b3d38a819 Mon Sep 17 00:00:00 2001
+From 368ff9d6d7866da60cc79ef2ad354ec4e2411a25 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 14:10:56 +0200
-Subject: [PATCH 07/10] add .dtd files to kernel-image .deb
+Subject: [PATCH 07/11] add .dtd files to kernel-image .deb
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---

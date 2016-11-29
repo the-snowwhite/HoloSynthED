@@ -1,7 +1,7 @@
-From ef72ba70404dcfc4d40c303022bcbc2e33af7be6 Mon Sep 17 00:00:00 2001
+From 28b5e9ea8f4de40dd75b3c444cba6e90c752d670 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 16 Jul 2016 22:21:55 +0200
-Subject: [PATCH 01/11] disable CONFIG_LOCALVERSION_AUTO for consistant
+Subject: [PATCH 01/10] disable CONFIG_LOCALVERSION_AUTO for consistant
  apt-updatable kernelversion name
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>

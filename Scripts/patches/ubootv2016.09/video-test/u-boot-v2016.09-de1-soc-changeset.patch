@@ -1,4 +1,4 @@
-From 7ac224afdfdfb1a000262f7c102d7b841fbb0ce8 Mon Sep 17 00:00:00 2001
+From 3b5bd3776cf154cebc0fa80625e4edf6ed4ca476 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 22 Oct 2016 00:04:55 +0200
 Subject: [PATCH 1/3] Add ext4 support and uEnv.txt support in boot folder
@@ -7,8 +7,8 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
  include/config_cmd_all.h               | 3 +++
  include/configs/socfpga_common.h       | 5 +++++
- include/configs/socfpga_de0_nano_soc.h | 2 +-
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ include/configs/socfpga_de0_nano_soc.h | 4 ++--
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/include/config_cmd_all.h b/include/config_cmd_all.h
 index b5fd6c6..94b6273 100644
@@ -24,7 +24,7 @@ index b5fd6c6..94b6273 100644
  
  #endif	/* _CONFIG_CMD_ALL_H */
 diff --git a/include/configs/socfpga_common.h b/include/configs/socfpga_common.h
-index b3fb245..a495bd8 100644
+index b3fb245..97d9d08 100644
 --- a/include/configs/socfpga_common.h
 +++ b/include/configs/socfpga_common.h
 @@ -265,6 +265,11 @@ unsigned int cm_get_qspi_controller_clk_hz(void);
@@ -33,14 +33,14 @@ index b3fb245..a495bd8 100644
  #if defined(CONFIG_ENV_IS_IN_MMC) && !defined(CONFIG_ENV_OFFSET)
 +#ifdef CONFIG_ENV_IS_IN_MMC
 +#define MMC_ENV_INTERFACE "mmc"
-+#define MMC_ENV_DEVICE_AND_PART "0:2"
++#define MMC_ENV_DEVICE_AND_PART "0:3"
 +#define MMC_ENV_FILE "uboot.env"
 +#endif
  #define CONFIG_SYS_MMC_ENV_DEV		0	/* device 0 */
  #define CONFIG_ENV_OFFSET		512	/* just after the MBR */
  #endif
 diff --git a/include/configs/socfpga_de0_nano_soc.h b/include/configs/socfpga_de0_nano_soc.h
-index 6b9546e..36f44e4 100644
+index 6b9546e..2e55a4e 100644
 --- a/include/configs/socfpga_de0_nano_soc.h
 +++ b/include/configs/socfpga_de0_nano_soc.h
 @@ -11,7 +11,7 @@
@@ -52,11 +52,20 @@ index 6b9546e..36f44e4 100644
  #define CONFIG_HW_WATCHDOG
  
  /* Memory configurations */
+@@ -41,7 +41,7 @@
+ 	"fdt_addr=100\0" \
+ 	"fdtimage=socfpga.dtb\0" \
+ 	"bootm ${loadaddr} - ${fdt_addr}\0" \
+-	"mmcroot=/dev/mmcblk0p2\0" \
++	"mmcroot=/dev/mmcblk0p3\0" \
+ 	"mmcboot=setenv bootargs " CONFIG_BOOTARGS \
+ 		" root=${mmcroot} rw rootwait;" \
+ 		"bootz ${loadaddr} - ${fdt_addr}\0" \
 -- 
 2.7.4
 
 
-From f00d5c84b3174f8fdb04e6546cafd193040804ba Mon Sep 17 00:00:00 2001
+From 2b7c5ef8515c2655b481d88aa4ef88f584c5d493 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 22 Oct 2016 01:03:25 +0200
 Subject: [PATCH 2/3] Add env file and bootscript select support based upon
@@ -64,14 +73,14 @@ Subject: [PATCH 2/3] Add env file and bootscript select support based upon
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
- include/configs/socfpga_de0_nano_soc.h | 57 +++++++++++++++++++++++++++++++---
- 1 file changed, 52 insertions(+), 5 deletions(-)
+ include/configs/socfpga_de0_nano_soc.h | 58 +++++++++++++++++++++++++++++++---
+ 1 file changed, 53 insertions(+), 5 deletions(-)
 
 diff --git a/include/configs/socfpga_de0_nano_soc.h b/include/configs/socfpga_de0_nano_soc.h
-index 36f44e4..e5d40b8 100644
+index 2e55a4e..2181296 100644
 --- a/include/configs/socfpga_de0_nano_soc.h
 +++ b/include/configs/socfpga_de0_nano_soc.h
-@@ -20,7 +20,28 @@
+@@ -20,7 +20,29 @@
  /* Booting Linux */
  #define CONFIG_BOOTFILE		"fitImage"
  #define CONFIG_BOOTARGS		"console=ttyS0," __stringify(CONFIG_BAUDRATE)
@@ -98,15 +107,16 @@ index 36f44e4..e5d40b8 100644
 +			"fi;" \
 +		"fi; " \
 +	"fi;" \
++
  #define CONFIG_LOADADDR		0x01000000
  #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
  
-@@ -34,20 +55,46 @@
+@@ -34,20 +56,46 @@
  
  /* Extra Environment */
  #define CONFIG_EXTRA_ENV_SETTINGS \
 +	"mmcdev=0\0" \
-+	"bootpart=0:2\0" \
++	"bootpart=0:3\0" \
 +	"bootfolder=/boot/\0" \
 +	"setbootenvs=setenv bootenv ${bootfolder}uEnv.txt ;" \
 +	"setenv dtbfolder ${bootfolder}dtb/ ;" \
@@ -119,7 +129,7 @@ index 36f44e4..e5d40b8 100644
  	"fdt_addr=100\0" \
 -	"fdtimage=socfpga.dtb\0" \
  	"bootm ${loadaddr} - ${fdt_addr}\0" \
- 	"mmcroot=/dev/mmcblk0p2\0" \
+ 	"mmcroot=/dev/mmcblk0p3\0" \
  	"mmcboot=setenv bootargs " CONFIG_BOOTARGS \
  		" root=${mmcroot} rw rootwait;" \
  		"bootz ${loadaddr} - ${fdt_addr}\0" \
@@ -156,29 +166,75 @@ index 36f44e4..e5d40b8 100644
 2.7.4
 
 
-From ca20b53b8c09bf8a2f348e9a42f67a804188af5c Mon Sep 17 00:00:00 2001
+From e0ea3200d0394c7c85ff04e6ba8e0b0a80fdee93 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
-Date: Sat, 22 Oct 2016 01:12:05 +0200
-Subject: [PATCH 3/3] Add env file and bootscript select support based upon
- chip model and installed kernel (bb style)
+Date: Mon, 28 Nov 2016 01:44:50 +0100
+Subject: [PATCH 3/3] Add framebuffer to dtb, and bmp support to config
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---
- include/configs/socfpga_de0_nano_soc.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/dts/socfpga.dtsi              | 17 +++++++++++++++++
+ include/configs/socfpga_de0_nano_soc.h | 14 ++++++++++++++
+ 2 files changed, 31 insertions(+)
 
+diff --git a/arch/arm/dts/socfpga.dtsi b/arch/arm/dts/socfpga.dtsi
+index 8588221..a15f0b1 100644
+--- a/arch/arm/dts/socfpga.dtsi
++++ b/arch/arm/dts/socfpga.dtsi
+@@ -791,4 +791,21 @@
+ 			reg = <0xffd08000 0x4000>;
+ 		};
+ 	};
++
++	hps_0_h2f_lw: bridge@0xff200000 {
++		compatible = "altr,h2f_lw_bridge-1.0", "simple-bus";
++		reg = <0xff200100 0x200000>;
++		#address-cells = <0x1>;
++		#size-cells = <0x1>;
++		ranges = <0x100 0xff200100 0x80>;
++
++		alt_vip_vfr: vip2@0x100 {
++			compatible = "ALTR,vip-frame-reader-14.0", "ALTR,vip-frame-reader-9.1";
++			reg = <0x100 0x0080>;
++			max-width = <1366>;	/* MAX_IMAGE_WIDTH type NUMBER */
++			max-height = <768>;	/* MAX_IMAGE_HEIGHT type NUMBER */
++			mem-word-width = <128>;	/* MEM_PORT_WIDTH type NUMBER */
++			bits-per-color = <8>;	/* BITS_PER_PIXEL_PER_COLOR_PLANE type NUMBER */
++		};
++	};
+ };
 diff --git a/include/configs/socfpga_de0_nano_soc.h b/include/configs/socfpga_de0_nano_soc.h
-index e5d40b8..ddb7da8 100644
+index 2181296..cbca110 100644
 --- a/include/configs/socfpga_de0_nano_soc.h
 +++ b/include/configs/socfpga_de0_nano_soc.h
-@@ -42,6 +42,7 @@
- 			"fi;" \
- 		"fi; " \
- 	"fi;" \
-+
- #define CONFIG_LOADADDR		0x01000000
- #define CONFIG_SYS_LOAD_ADDR	CONFIG_LOADADDR
+@@ -10,13 +10,27 @@
  
+ /* U-Boot Commands */
+ #define CONFIG_SYS_NO_FLASH
++#define CONFIG_DISPLAY_CPUINFO
+ #define CONFIG_DOS_PARTITION
+ #define CONFIG_EXT4_WRITE
+ #define CONFIG_HW_WATCHDOG
++#define CONFIG_CMD_BMP
++#define	CONFIG_VIDEO
+ 
+ /* Memory configurations */
+ #define PHYS_SDRAM_1_SIZE		0x40000000	/* 1GiB */
+ 
++/* LCD */
++#ifdef CONFIG_VIDEO
++#define	CONFIG_VIDEO_LOGO
++#define	CONFIG_SPLASH_SCREEN
++#define	CONFIG_CMD_BMP
++#define	CONFIG_BMP_16BPP
++#define	CONFIG_VIDEO_BMP_RLE8
++#define	CONFIG_VIDEO_BMP_GZIP
++#define	CONFIG_SYS_VIDEO_LOGO_MAX_SIZE	(2 << 20)
++#endif
++
+ /* Booting Linux */
+ #define CONFIG_BOOTFILE		"fitImage"
+ #define CONFIG_BOOTARGS		"console=ttyS0," __stringify(CONFIG_BAUDRATE)
 -- 
 2.7.4
 

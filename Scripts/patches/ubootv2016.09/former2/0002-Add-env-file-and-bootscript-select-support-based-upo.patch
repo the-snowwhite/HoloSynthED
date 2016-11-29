@@ -1,7 +1,7 @@
-From f00d5c84b3174f8fdb04e6546cafd193040804ba Mon Sep 17 00:00:00 2001
+From 7de18a70c1bf1a072a232003db6254b02c71220d Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 22 Oct 2016 01:03:25 +0200
-Subject: [PATCH 2/3] Add env file and bootscript select support based upon
+Subject: [PATCH 2/5] Add env file and bootscript select support based upon
  chip model and installed kernel (bb style)
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
@@ -10,7 +10,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 52 insertions(+), 5 deletions(-)
 
 diff --git a/include/configs/socfpga_de0_nano_soc.h b/include/configs/socfpga_de0_nano_soc.h
-index 36f44e4..e5d40b8 100644
+index 2e55a4e..6e6377b 100644
 --- a/include/configs/socfpga_de0_nano_soc.h
 +++ b/include/configs/socfpga_de0_nano_soc.h
 @@ -20,7 +20,28 @@
@@ -48,7 +48,7 @@ index 36f44e4..e5d40b8 100644
  /* Extra Environment */
  #define CONFIG_EXTRA_ENV_SETTINGS \
 +	"mmcdev=0\0" \
-+	"bootpart=0:2\0" \
++	"bootpart=0:3\0" \
 +	"bootfolder=/boot/\0" \
 +	"setbootenvs=setenv bootenv ${bootfolder}uEnv.txt ;" \
 +	"setenv dtbfolder ${bootfolder}dtb/ ;" \
@@ -61,7 +61,7 @@ index 36f44e4..e5d40b8 100644
  	"fdt_addr=100\0" \
 -	"fdtimage=socfpga.dtb\0" \
  	"bootm ${loadaddr} - ${fdt_addr}\0" \
- 	"mmcroot=/dev/mmcblk0p2\0" \
+ 	"mmcroot=/dev/mmcblk0p3\0" \
  	"mmcboot=setenv bootargs " CONFIG_BOOTARGS \
  		" root=${mmcroot} rw rootwait;" \
  		"bootz ${loadaddr} - ${fdt_addr}\0" \

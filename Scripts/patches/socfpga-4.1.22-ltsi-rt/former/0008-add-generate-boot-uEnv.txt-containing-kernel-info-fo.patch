@@ -1,4 +1,4 @@
-From 81953b78dc06a4da29fa303965ce82f5efab9118 Mon Sep 17 00:00:00 2001
+From cc762b120ccb9907402005cc92d911a7a5ff7b73 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Mon, 18 Jul 2016 16:21:56 +0200
 Subject: [PATCH 08/11] add generate /boot/uEnv.txt containing kernel info for
@@ -10,7 +10,7 @@ Signed-off-by: Michael Brown <producer@holotronic.dk>
  1 file changed, 23 insertions(+)
 
 diff --git a/scripts/package/builddeb b/scripts/package/builddeb
-index 67770e9..4ee6f6e 100755
+index 67770e9..6d98a47 100755
 --- a/scripts/package/builddeb
 +++ b/scripts/package/builddeb
 @@ -183,6 +183,29 @@ if grep -q '^CONFIG_BLK_DEV_INITRD=y' $KCONFIG_CONFIG; then
@@ -36,7 +36,7 @@ index 67770e9..4ee6f6e 100755
 +axibridge_handoff=0x00000000
 +l3remap=ff800000
 +l3remap_handoff=0x00000019
-+bridge_enable_handoff=mw ${fpgaintf} ${fpgaintf_handoff}; mw ${fpga2sdram} ${fpga2sdram_handoff}; mw \${axibridge} ${axibridge_handoff}; mw ${l3remap} ${l3remap_handoff}
++bridge_enable_handoff=mw ${fpgaintf} ${fpgaintf_handoff}; mw ${fpga2sdram} ${fpga2sdram_handoff}; mw \${axibridge} ${axibridge_handoff}; mw ${l3remap} ${l3remap_handoff} 
 +loadimage=run fpgaload; run bridge_enable_handoff; load mmc ${bootpart} ${loadaddr} ${bootimage}; load mmc ${bootpart} ${fdt_addr} ${fdtimage}
 +EOF
 +

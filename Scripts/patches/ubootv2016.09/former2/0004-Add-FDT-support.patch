@@ -1,7 +1,7 @@
-From c73bb2fc2c6b241ed1e9f79d792f8d14f381d361 Mon Sep 17 00:00:00 2001
+From 9e86f482f0228b640c1c167665e5eaf6535148cb Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Tue, 25 Oct 2016 15:38:27 +0200
-Subject: [PATCH 4/4] Add FDT support
+Subject: [PATCH 4/5] Add FDT support
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---

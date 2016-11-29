@@ -1,4 +1,4 @@
-From 03c6fc859a975c6da03202948844b626892b4b75 Mon Sep 17 00:00:00 2001
+From 2b7c5ef8515c2655b481d88aa4ef88f584c5d493 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sat, 22 Oct 2016 01:03:25 +0200
 Subject: [PATCH 2/3] Add env file and bootscript select support based upon

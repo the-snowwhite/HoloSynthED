@@ -1,7 +1,7 @@
-From a673ee92df740edf3e6775224b91baa9dae770fe Mon Sep 17 00:00:00 2001
+From d171f657297f15333f2cfd392da176c42a8cbcd6 Mon Sep 17 00:00:00 2001
 From: Michael Brown <producer@holotronic.dk>
 Date: Sun, 17 Jul 2016 01:31:34 +0200
-Subject: [PATCH 05/11] add ext4 root fs support and autofs4 module
+Subject: [PATCH 05/10] add ext4 root fs support and autofs4 module
 
 Signed-off-by: Michael Brown <producer@holotronic.dk>
 ---

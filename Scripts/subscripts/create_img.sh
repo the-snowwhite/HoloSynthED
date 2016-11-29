@@ -109,10 +109,12 @@ sudo sync
 sudo partprobe -s ${LOOP_DEV}
 sudo sync
 
+echo ""
 echo "SubScr_MSG: creating file systems"
+echo ""
 media_prefix=${LOOP_DEV}
 mkfs_partition="${media_prefix}${media_rootfs_partition}"
-mkswap -f ${media_swap_partition}
+sudo mkswap -f ${media_prefix}${media_swap_partition}
 
 sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_options} ${mkfs_partition} ${mkfs_label}"
 
@@ -128,7 +130,7 @@ echo "#----------------     +++ generating rootfs image  zzz  +++ ........  ----
 echo "#-----------------------------   wait   ----------------------------------------#"
 echo "#-------------------------------------------------------------------------------#"
 set -v
-sudo dd if=/dev/zero of=${ROOTFS_IMG}  bs=4K count=600K
+sudo dd if=/dev/zero of=${ROOTFS_IMG}  bs=4K count=1000K
 sudo sh -c "LC_ALL=C ${mkfs} ${mkfs_options} ${ROOTFS_IMG} ${mkfs_label}"
 #sudo mke2fs -j -L "rootfs" ${ROOTFS_IMG}
 }
