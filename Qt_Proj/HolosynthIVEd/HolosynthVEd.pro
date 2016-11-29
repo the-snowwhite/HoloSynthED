@@ -53,3 +53,8 @@ target.path = /home/holosynth/prg
 INSTALLS += target
 
 RESOURCES += virtualboard.qrc
+
+
+mypackage.files = syx
+mypackage.path = /home/holosynth/prg
+INSTALLS += mypackage
