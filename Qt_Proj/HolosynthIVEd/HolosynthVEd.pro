@@ -10,14 +10,14 @@ message("Gui only")
 }else{
 message("GUI_ONLY not found")
 message("Compiling Gui + synth io")
-include ( /usr/local/qwt-6.1.3/features/qwt.prf )
-unix:!macx: LIBS += -L/usr/local/lib/qwt-6.1.3/lib -lqwt
-INCLUDEPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
-DEPENDPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
-INCLUDEPATH += /home/mib/altera/16.0/embedded/ip/altera/hps/altera_hps/hwlib/include
-DEPENDPATH += /home/mib/altera/16.0/embedded/ip/altera/hps/altera_hps/hwlib/include
-INCLUDEPATH += /usr/local/lib/qwt-6.1.3/include
-DEPENDPATH += /usr/local/lib/qwt-6.1.3/include
+include ( /tmp/qt_5.7.1-img/usr/local/qwt-6.3.0-svn/features/qwt.prf )
+unix:!macx: LIBS += -L/tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/lib -lqwt
+#INCLUDEPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
+#DEPENDPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
+INCLUDEPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
+DEPENDPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
+INCLUDEPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/include
+DEPENDPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/include
 }
 
 QT       += core gui
@@ -50,11 +50,8 @@ QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS += -Wno-psabi
 
 target.path = /home/holosynth/prg
-INSTALLS += target
-
-RESOURCES += virtualboard.qrc
-
-
 mypackage.files = syx
 mypackage.path = /home/holosynth/prg
-INSTALLS += mypackage
+INSTALLS += target mypackage
+
+RESOURCES += virtualboard.qrc
