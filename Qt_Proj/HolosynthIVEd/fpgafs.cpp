@@ -23,7 +23,8 @@
 
 //#define HW_REGS_BASE ( ALT_STM_OFST )
 #define HW_REGS_SPAN ( 4096 )
-#define FILE_DEV "/dev/uio0"
+//#define FILE_DEV "/dev/uio0"
+#define FILE_DEV "/dev/uio1"
 
 FPGAFS::FPGAFS()// :
 //    m_bIsVideoEnabled(false)

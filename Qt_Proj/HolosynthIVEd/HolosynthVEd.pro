@@ -10,14 +10,14 @@ message("Gui only")
 }else{
 message("GUI_ONLY not found")
 message("Compiling Gui + synth io")
-include ( /tmp/qt_5.7.1-img/usr/local/qwt-6.3.0-svn/features/qwt.prf )
-unix:!macx: LIBS += -L/tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/lib -lqwt
+include ( /usr/lib/aarch64-linux-gnu/qt5/mkspecs/features/qwt.prf )
+unix:!macx: LIBS += -L/usr/lib -lqwt-qt5
 #INCLUDEPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
 #DEPENDPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
-INCLUDEPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
-DEPENDPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
-INCLUDEPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/include
-DEPENDPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/include
+#INCLUDEPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
+#DEPENDPATH += /home/mib/intelFPGA/17.1/embedded/ip/altera/hps/altera_hps/hwlib/include
+#INCLUDEPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt-6.3.0-svn/include
+#DEPENDPATH += /tmp/qt_5.7.1-img/usr/local/lib/qwt/include
 }
 
 QT       += core gui

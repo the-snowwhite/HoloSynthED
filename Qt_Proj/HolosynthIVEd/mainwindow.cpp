@@ -443,7 +443,7 @@ void synth1Tab::synthtolcd()
      qDebug("synth2lcd end");
      filenamelineedit->setText(patch_name);                    // common patch name
 //     filenamelineedit->setText("hello");                    // common patch name
-    qDebug("Set filenamelineedit text= " + patch_name);
+    qDebug("Set filenamelineedit text= %s",qPrintable( patch_name));
 }
 
 void synth1Tab::setEnvPlot(int envNr)
@@ -928,7 +928,7 @@ void synth1Tab::readSyxFile(QString filename)
         QMessageBox::information(NULL,"show","<font size=12 >File " +filename + "<br>size: " +Buffer.size() + "<br> has wrong file size </font>"); //<font size=12 > </font>
         return;
     }
-    qDebug("filetype = " + filetype );
+    qDebug("filetype = %d", filetype );
     FileBufferIndex = 3;
     for(Address=0x000;Address < 0x018;Address++)
     {
