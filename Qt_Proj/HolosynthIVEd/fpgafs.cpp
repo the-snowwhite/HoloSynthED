@@ -10,6 +10,8 @@
 #include <QDebug>
 
 #include <stdint.h>
+
+#include <dirent.h> 
 //#include <sys/ioctl.h>
 //#include <linux/i2c-dev.h>
 //#include <fcntl.h>
@@ -45,7 +47,30 @@ bool FPGAFS::Init()
 {
     bool bSuccess = true;
     // Open /dev/uio0
-    if ( ( fd = open ( FILE_DEV, ( O_RDWR | O_SYNC ) ) ) == -1 ) {
+    char buf[1024],str[32], uio_dev[16];
+    ssize_t len;
+    DIR *d;
+    struct dirent *dir;
+    d = opendir("/sys/class/uio");
+    if (d) {
+            while ((dir = readdir(d)) != NULL) {
+            if( dir->d_type == DT_LNK) {
+                sprintf(str, "/sys/class/uio/%s", dir->d_name);
+
+                if ((len = readlink(str, buf, sizeof(buf)-1)) != -1){
+                    buf[len] = '\0';
+                }
+                if(strstr(buf,"a0040000.hm2_axilite_int") != NULL) {
+                    qDebug() << "\n Found string in " << dir->d_name << "\n";
+                    sprintf(uio_dev, "/dev/%s\0", dir->d_name);
+                    qDebug() << buf << "\n\n";
+                    qDebug() << uio_dev << "\n";
+                }
+            }
+        }
+        closedir(d);
+    }
+    if ( ( fd = open ( uio_dev, ( O_RDWR | O_SYNC ) ) ) == -1 ) {
         bSuccess = false;
         close ( fd );
     }
