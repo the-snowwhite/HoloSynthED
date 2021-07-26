@@ -11,6 +11,7 @@ message("Gui only")
 message("GUI_ONLY not found")
 message("Compiling Gui + synth io")
 include ( /usr/lib/aarch64-linux-gnu/qt5/mkspecs/features/qwt.prf )
+#include ( /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/qwt.prf )
 unix:!macx: LIBS += -L/usr/lib -lqwt-qt5
 #INCLUDEPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
 #DEPENDPATH += /home/mib/Development/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
