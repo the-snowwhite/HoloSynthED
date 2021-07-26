@@ -60,9 +60,9 @@ bool FPGAFS::Init()
                 if ((len = readlink(str, buf, sizeof(buf)-1)) != -1){
                     buf[len] = '\0';
                 }
-                if(strstr(buf,"a0040000.hm2_axilite_int") != NULL) {
+                if(strstr(buf,"a0040000.hm2_axilite_int") || strstr(buf,"ff240000.holosynth_sysex") != NULL) {
                     qDebug() << "\n Found string in " << dir->d_name << "\n";
-                    sprintf(uio_dev, "/dev/%s\0", dir->d_name);
+                    sprintf(uio_dev, "/dev/%s", dir->d_name);
                     qDebug() << buf << "\n\n";
                     qDebug() << uio_dev << "\n";
                 }
