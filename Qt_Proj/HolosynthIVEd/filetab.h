@@ -9,14 +9,7 @@
 #include <QLabel>
 #include <QSlider>
 #include "sliderproxy.h"
-/*
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_plot_grid.h>
-#include <qwt_symbol.h>
-#include <qwt_legend.h>
-*/
-#include "synth1tab.h"
+//#include "synth1tab.h"
 #include "fpga.h"
 #include <stdint.h>
 #include <QTextEdit>

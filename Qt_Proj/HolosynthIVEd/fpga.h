@@ -20,8 +20,6 @@ protected:
     int fd;
     void *virtual_base;
     uint32_t *uio_mem_addr=NULL;
-
-//    bool m_bIsVideoEnabled;
     bool Init();
 
 };

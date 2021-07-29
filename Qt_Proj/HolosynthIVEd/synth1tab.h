@@ -75,12 +75,13 @@ public:
     QPushButton *presetbutton[10];
     QByteArray PresetBuffer[11];
 
-   QCheckBox *presetlistenCheckBox;
+    QCheckBox *midiinternCheckBox;
+    QCheckBox *presetlistenCheckBox;
 
-   QPushButton *keyboard2openbutton;
-   QPushButton *keyboard2closebutton;
+    QPushButton *keyboard2openbutton;
+    QPushButton *keyboard2closebutton;
 
-   QByteArray patch_name;
+    QByteArray patch_name;
 
 //   QMessageBox msgBox;
 //   QMessageBox msgBox2;
@@ -115,8 +116,9 @@ public slots:
     void mat_button_pressed(void);
     void env_button_pressed(void);
     void com_button_pressed(void);
+    void midi_intern_pressed(void);
     void main_slider_val_change(int value);
-    void setLCD(unsigned int RegAddress, int newValue);
+    void setLCD(unsigned int RegAddress, u_int8_t newValue);
     void populate_fileloadbox();
     void on_fileloadbox_activated(const QString &file);
     void preset_pressed(void);
